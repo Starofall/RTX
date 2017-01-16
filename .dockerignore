@@ -1,0 +1,9 @@
+# comment
+*/temp*
+*/target/*
+*/target/**
+*/target/
+**/target/
+tools/crowdnav-spark-generator/project
+tools/crowdnav-spark-generator/target
+.git/
