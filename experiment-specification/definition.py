@@ -59,38 +59,38 @@ configuration = {
     # If we use the Spark preprocessor, we have to define this sparkConfig
     "spark": {
         # currently we only support "local_jar"
-        "submit_mode": "local_jar",
-        # name of the spark jobs jar (located in the experiment's folder)
-        "job_file": "CrowdNavSpark-assembly-1.0.jar",
-        # the class of the script to start
-        "job_class": "crowdnav.Main"
+        "submit_mode": "",
+        # name of the spark jobs jar (located in the experiment's folder) - e.g. "assembly-1.0.jar"
+        "job_file": "",
+        # the class of the script to start - e.g. "crowdnav.Main"
+        "job_class": ""
     },
     # If we use KafkaProducer as a ChangeProvider, we have to define this kafkaProducerConfig
     "kafka_producer": {
-        # Where we can connect to kafka
-        "kafka_uri": "sparfka:9092",
+        # Where we can connect to kafka - e.g. kafka:9092
+        "kafka_uri": "",
         # The topic to listen to
-        "topic": "crowd-nav-commands",
+        "topic": "",
         # The serializer we want to use for kafka messages
         #   Currently only "JSON" is supported
-        "serializer": "JSON",
+        "serializer": "",
     },
     # If we use KafkaConsumer as a DataProvider, we have to define this kafkaConsumerConfig
     "kafka_consumer": {
         # Where we can connect to kafka
-        "kafka_uri": "sparfka:9092",
+        "kafka_uri": "",
         # The topic to listen to
-        "topic": "crowd-nav-trips",
+        "topic": "",
         # The serializer we want to use for kafka messages
         #   Currently only "JSON" is supported
-        "serializer": "JSON",
+        "serializer": "",
     },
 }
 
 # If we use ExecutionStrategy "self_optimizer" ->
 self_optimizer = {
-    # Currently only Gauss Process
-    "method": "gauss_process",
+    # Currently only "gauss_process" is supported
+    "method": "",
     # If new changes are not instantly visible, we want to ignore some results after state changes
     "ignore_first_n_results": 1000,
     # How many samples of data to receive for one run
@@ -98,7 +98,7 @@ self_optimizer = {
     # The variables to modify
     "knobs": {
         # defines a [from-to] interval that will be used by the optimizer
-        "exploration_percentage": [0.0, 1.0]
+        "variable_name": [0.0, 1.0]
     }
 }
 
@@ -107,7 +107,7 @@ experiments_seq = [
     {
         # Variable that is changed in the process
         "knobs": {
-            "exploration_percentage": 0.0
+            "variable_name": 0.0
         },
         # If new changes are not instantly visible, we want to ignore some results after state changes
         "ignore_first_n_results": 1000,
@@ -117,7 +117,7 @@ experiments_seq = [
     {
         # Variable that is changed in the process
         "knobs": {
-            "exploration_percentage": 0.1
+            "variable_name": 0.1
         },
         # If new changes are not instantly visible, we want to ignore some results after state changes
         "ignore_first_n_results": 1000,

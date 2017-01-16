@@ -1,5 +1,5 @@
 from colorama import Fore
-from dbalib import info, error
+from rtxlib import info, error
 
 import pandas as pd
 import seaborn as sns

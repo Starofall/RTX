@@ -11,6 +11,8 @@ setup(
         'colorama',
         'kafka-python',
         'scikit-optimize',
-        'flask'
+        'flask',
+        'pandas',
+        'seaborn'
     ]
 )
