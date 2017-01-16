@@ -52,7 +52,6 @@ def experimentFunction(wf, exp):
         error("evaluator failed")
 
     info("> ResultValue    | " + str(result))
-    log_results(wf.folder, [str(sample_size), result,
-                            str(exp["knobs"]),
-                            str(exp["state"])])
+    log_results(wf.folder, exp["knobs"].values() + [result])
+
     return result

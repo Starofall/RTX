@@ -62,11 +62,17 @@ def direct_print(str):
 
 
 import csv
-def log_results(experiment_folder, data):
+def log_results(experiment_folder, data, append=True):
     try:
-        with open('./' + str(experiment_folder) + '/results.csv', 'ab') as csv_file:
-            writer = csv.writer(csv_file, dialect='excel')
-            writer.writerow(data)
+        if append:
+            with open('./' + str(experiment_folder) + '/results.csv', 'ab') as csv_file:
+                writer = csv.writer(csv_file, dialect='excel')
+                writer.writerow(data)
+        else:
+            with open('./' + str(experiment_folder) + '/results.csv', 'wb') as csv_file:
+                writer = csv.writer(csv_file, dialect='excel')
+                writer.writerow(data)
+
     except csv.Error as e:
         error("Log to csv did not work: " + str(e))
         pass

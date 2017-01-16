@@ -2,7 +2,7 @@ import time
 
 from colorama import Fore
 
-from rtxlib import info, error, debug
+from rtxlib import info, error, log_results
 from rtxlib.changeproviders import init_change_provider
 from rtxlib.dataproviders import init_data_provider
 from rtxlib.executionstrategy.SelfOptimizerStrategy import start_self_optimizer_strategy
@@ -28,11 +28,17 @@ def execute_workflow(wf):
     init_data_provider(wf)
     # start the right execution strategy
     if wf.system["execution_strategy"] == "sequential":
+        log_results(wf.folder, wf.experiments_seq[0]["knobs"].keys() + ["result"], append=False)
         start_sequential_strategy(wf)
+
     elif wf.system["execution_strategy"] == "self_optimizer":
+        log_results(wf.folder, wf.self_optimizer["knobs"].keys() + ["result"], append=False)
         start_self_optimizer_strategy(wf)
+
     elif wf.system["execution_strategy"] == "step":
+        log_results(wf.folder, wf.step_explorer["knobs"].keys() + ["result"], append=False)
         start_step_strategy(wf)
+
     else:
         error("no valid execution_strategy")
     # finished
