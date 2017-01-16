@@ -5,6 +5,8 @@ import subprocess
 import time
 
 import sys
+
+import signal
 from colorama import Fore
 
 from rtxlib import info, error
@@ -46,6 +48,10 @@ class SparkPreProcessor(PreProcessor):
         time.sleep(10)
 
     def shutdown(self):
+        try:
+            os.killpg(os.getpgid(self.process.pid), signal.SIGTERM)
+        except:
+            pass
         try:
             self.process.kill()
         except:
