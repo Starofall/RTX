@@ -4,6 +4,7 @@ import imp
 
 from rtxlib import info, error, debug
 from rtxlib.workflow import execute_workflow
+from rtxlib.report import plot
 
 if __name__ == '__main__':
     # Throw error on to less parameters
@@ -14,7 +15,7 @@ if __name__ == '__main__':
     # Parse the requested command
     cmd = sys.argv[1]
 
-    if cmd == "start":
+    if cmd == "start" or cmd == "report":
         info("> Starting RTX...")
         if len(sys.argv) != 3:
             error("missing experiment folder")
@@ -34,9 +35,17 @@ if __name__ == '__main__':
         except ImportError as e:
             error("Import failed: " + str(e))
             exit(1)
-        # Call WorkflowExecutor on the loaded workflow
-        execute_workflow(wf)
-        exit(0)
+
+        if cmd == "start":
+            info("> Starting RTX experiment...")
+            # Call WorkflowExecutor on the loaded workflow
+            execute_workflow(wf)
+            plot(wf)
+            exit(0)
+        if cmd == "report":
+            info("> Starting RTX reporting...")
+            plot(wf)
+            exit(0)
 
     # Help
     info("#################")

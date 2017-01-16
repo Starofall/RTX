@@ -1,6 +1,6 @@
 # for documentation see file /experiment-specification/definition.py
 
-name = "CrowdNav-Step"
+name = "CrowdNav-Step-Multivariable"
 
 
 def evaluator(resultState):
@@ -56,6 +56,7 @@ step_explorer = {
     # The variables to modify
     "knobs": {
         # defines a [from-to] interval and step
-        "exploration_percentage": ([0.0, 0.4], 0.1),
+        "victim_percentage": ([0.0, 0.3], 0.1),
+        "freshness_cut_off_value": ([100, 400], 100),
     }
 }

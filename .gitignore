@@ -10,3 +10,4 @@ checkpoint/*
 DBA.egg-info/
 build/
 dist/
+*/*.png
