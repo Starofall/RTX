@@ -58,7 +58,7 @@ self_optimizer = {
     # The variables to modify
     "knobs": {
         # defines a [from-to] interval that will be used by the optimizer
-        # "victim_percentage": [0.0, 1.0],
+        # "exploration_percentage": [0.0, 1.0],
         "max_speed_and_length_factor": [0.5, 1.5],
         "average_edge_duration_factor": [0.5, 1.5],
         # "freshness_update_factor": [1, 30],

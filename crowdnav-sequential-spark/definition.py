@@ -59,7 +59,7 @@ experiments_seq = [
         "ignore_first_n_results": 10,
         "sample_size": 10,
         "knobs": {
-            "victim_percentage": 0.0
+            "exploration_percentage": 0.0
         }
     },
 ]

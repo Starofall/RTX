@@ -38,7 +38,7 @@ RTX has the following abstractions that can be implemented for any given service
             "ignore_first_n_results": 100,
             "sample_size": 100,
             "knobs": {
-                "victim_percentage": 0.0
+                "exploration_percentage": 0.0
             }
         }
         ...
@@ -74,7 +74,7 @@ RTX has the following abstractions that can be implemented for any given service
         # The variables to modify
         "knobs": {
             # defines a [from-to] interval and step
-            "victim_percentage": ([0.0, 0.2], 0.1),
+            "exploration_percentage": ([0.0, 0.2], 0.1),
             "freshness_cut_off_value": ([100, 400], 100)
         }
     }

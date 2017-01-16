@@ -98,7 +98,7 @@ self_optimizer = {
     # The variables to modify
     "knobs": {
         # defines a [from-to] interval that will be used by the optimizer
-        "victim_percentage": [0.0, 1.0]
+        "exploration_percentage": [0.0, 1.0]
     }
 }
 
@@ -107,7 +107,7 @@ experiments_seq = [
     {
         # Variable that is changed in the process
         "knobs": {
-            "victim_percentage": 0.0
+            "exploration_percentage": 0.0
         },
         # If new changes are not instantly visible, we want to ignore some results after state changes
         "ignore_first_n_results": 1000,
@@ -117,7 +117,7 @@ experiments_seq = [
     {
         # Variable that is changed in the process
         "knobs": {
-            "victim_percentage": 0.1
+            "exploration_percentage": 0.1
         },
         # If new changes are not instantly visible, we want to ignore some results after state changes
         "ignore_first_n_results": 1000,

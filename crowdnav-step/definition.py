@@ -56,7 +56,7 @@ step_explorer = {
     # The variables to modify
     "knobs": {
         # defines a [from-to] interval and step
-        "victim_percentage": ([0.0, 0.2], 0.1),
+        "exploration_percentage": ([0.0, 0.2], 0.1),
         "freshness_cut_off_value": ([100, 400], 100),
     }
 }

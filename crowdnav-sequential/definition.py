@@ -53,21 +53,21 @@ experiments_seq = [
         "ignore_first_n_results": 100,
         "sample_size": 100,
         "knobs": {
-            "victim_percentage": 0.0
+            "exploration_percentage": 0.0
         }
     },
     {
         "ignore_first_n_results": 100,
         "sample_size": 100,
         "knobs": {
-            "victim_percentage": 0.05
+            "exploration_percentage": 0.05
         }
     },
     {
         "ignore_first_n_results": 100,
         "sample_size": 50,
         "knobs": {
-            "victim_percentage": 0.1
+            "exploration_percentage": 0.1
         }
     }
 ]
