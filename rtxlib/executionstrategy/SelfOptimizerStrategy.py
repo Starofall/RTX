@@ -43,12 +43,3 @@ def start_self_optimizer_strategy(wf):
     info(">")
     info("> OptimalResult  | Knobs:  " + str(recreate_knob_from_optimizer_values(variables, optimizer_result.x)))
     info(">                | Result: " + str(optimizer_result.fun))
-
-#
-# if True:
-#     optimum = gp_minimize(
-#         lambda x: experimentFunction(wf, {"name": str(x[0]), "startDelay": 20,
-#                                           "kafkaMessage": {"victimPercentage": x[0]}}),
-#         [(0.0, 0.2)])
-#     # optimum = gp_minimize(testFunction, [(0.0, 1.0)])
-#     error("optimum@ " + str(optimum.x) + " with value: " + str(optimum.fun))

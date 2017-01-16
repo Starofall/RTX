@@ -2,14 +2,11 @@ import atexit
 import os
 import subprocess
 import time
-from signal import CTRL_C_EVENT, CTRL_BREAK_EVENT, signal, SIGTERM
 
 from colorama import Fore
 
 from rtxlib import info, error
 from rtxlib.preprocessors.PreProcessor import PreProcessor
-
-from multiprocessing import Process
 
 
 class SparkPreProcessor(PreProcessor):
