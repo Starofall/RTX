@@ -5,10 +5,12 @@ name = ""
 system = {
 
     # Defines how to run experiments
-    # "sequential"    -> Runs a list of experiments in a sequential way
-    #    requires a "experiments_seq" array
+    # "sequential"     -> Runs a list of experiments in a sequential way
+    #    requires a "experiments_seq" array in the definition.py
     # "self_optimizer" -> Runs a self adaptation algorithm to optimize values
-    #    requires a "self_optimizer" object in the definition
+    #    requires a "self_optimizer" object in the definition.py
+    # "step"           -> Goes through the range in steps (even on two dimensions)
+    #    requires a "step_explorer" object in the definition.py
     "execution_strategy": "",
 
     # We can install a preprocessor like Spark to reduce data volume
@@ -125,3 +127,16 @@ experiments_seq = [
         "sample_size": 1000,
     }
 ]
+
+# If we use ExecutionStrategy "sequential" ->
+step_explorer = {
+    # If new changes are not instantly visible, we want to ignore some results after state changes
+    "ignore_first_n_results": 10,
+    # How many samples of data to receive for one run
+    "sample_size": 10,
+    # The variables to modify
+    "knobs": {
+        # defines a [from-to] interval and step
+        "variable_name": ([0.0, 0.4], 0.1),
+    }
+}
