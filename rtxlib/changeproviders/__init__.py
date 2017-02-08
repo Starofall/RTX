@@ -4,13 +4,13 @@ from rtxlib.changeproviders.KafkaProducerChangeProvider import KafkaProducerChan
 
 def init_change_provider(wf):
     """ loads the specified change provider into the workflow """
-    cp = wf.system["change_provider"]
-    if cp == "kafka_producer":
-        wf.change_provider = KafkaProducerChangeProvider(wf)
-    elif cp == "mqtt_publisher":
+    cp = wf.change_provider
+    if cp["type"] == "kafka_producer":
+        cp["instance"] = KafkaProducerChangeProvider(wf, cp)
+    elif cp["type"] == "mqtt_publisher":
         error("> Not implemented")
         exit(1)
-    elif cp == "http_change_requests":
+    elif cp["type"] == "http_change_requests":
         error("> Not implemented")
         exit(1)
     else:

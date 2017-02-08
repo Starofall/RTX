@@ -4,16 +4,16 @@ from colorama import Fore
 from rtxlib import info, error, debug
 from rtxlib.changeproviders.ChangeProvider import ChangeProvider
 
+
 class KafkaProducerChangeProvider(ChangeProvider):
-    def __init__(self, wf):
+    def __init__(self, wf, cp):
         from kafka import KafkaProducer
         from flask import json
         try:
-            self.kafka_uri = wf.configuration["kafka_producer"]["kafka_uri"]
-            self.topic = wf.configuration["kafka_producer"]["topic"]
-            self.serializer = wf.configuration["kafka_producer"]["serializer"]
-            info(
-                "> KafkaProducer  | " + self.serializer + " | URI: " + self.kafka_uri + " | Topic: " +
+            self.kafka_uri = cp["kafka_uri"]
+            self.topic = cp["topic"]
+            self.serializer = cp["serializer"]
+            info("> KafkaProducer  | " + self.serializer + " | URI: " + self.kafka_uri + " | Topic: " +
                 self.topic, Fore.CYAN)
         except KeyError:
             error("configuration.kafka_producer was incomplete")

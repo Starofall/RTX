@@ -16,11 +16,11 @@ from rtxlib.preprocessors.PreProcessor import PreProcessor
 class SparkPreProcessor(PreProcessor):
     """ Implements a preprocessor in spark """
 
-    def __init__(self, wf):
+    def __init__(self, wf,p):
         try:
-            self.submit_mode = wf.configuration["spark"]["submit_mode"]
-            self.job_file = wf.configuration["spark"]["job_file"]
-            self.job_class = wf.configuration["spark"]["job_class"]
+            self.submit_mode = p["submit_mode"]
+            self.job_file = p["job_file"]
+            self.job_class = p["job_class"]
             info("> PreProcessor   | Spark  | Mode: " + str(self.submit_mode) + " | Args: " + str(
                 self.job_class), Fore.CYAN)
         except KeyError as e:

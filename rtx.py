@@ -16,7 +16,6 @@ if __name__ == '__main__':
     cmd = sys.argv[1]
 
     if cmd == "start" or cmd == "report":
-        info("> Starting RTX...")
         if len(sys.argv) != 3:
             error("missing experiment folder")
             exit(1)

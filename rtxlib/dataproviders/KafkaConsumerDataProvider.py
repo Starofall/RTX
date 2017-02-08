@@ -11,14 +11,14 @@ from rtxlib.dataproviders.DataProvider import DataProvider
 
 
 class KafkaConsumerDataProvider(DataProvider):
-    def __init__(self, wf):
+    def __init__(self, wf,cp):
         from kafka import KafkaConsumer
         from flask import json
         self.callBackFunction = None
         try:
-            self.kafka_uri = wf.configuration["kafka_consumer"]["kafka_uri"]
-            self.topic = wf.configuration["kafka_consumer"]["topic"]
-            self.serializer = wf.configuration["kafka_consumer"]["serializer"]
+            self.kafka_uri = cp["kafka_uri"]
+            self.topic = cp["topic"]
+            self.serializer = cp["serializer"]
             info(
                 "> KafkaConsumer  | " + self.serializer + " | URI: " + self.kafka_uri + " | Topic: " +
                 self.topic, Fore.CYAN)
