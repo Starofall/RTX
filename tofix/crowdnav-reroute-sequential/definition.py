@@ -1,6 +1,6 @@
 # for documentation see file /experiment-specification/definition.py
 
-name = "CrowdNav-Step-Multivariable"
+name = "CrowdNav-Sequential"
 
 
 def evaluator(resultState):
@@ -25,7 +25,7 @@ def change_event_creator(variables):
 
 
 system = {
-    "execution_strategy": "step",
+    "execution_strategy": "sequential",
     "pre_processor": "none",
     "data_provider": "kafka_consumer",
     "change_provider": "kafka_producer",
@@ -48,15 +48,40 @@ configuration = {
     }
 }
 
-step_explorer = {
-    # If new changes are not instantly visible, we want to ignore some results after state changes
-    "ignore_first_n_results": 10,
-    # How many samples of data to receive for one run
-    "sample_size": 10,
-    # The variables to modify
-    "knobs": {
-        # defines a [from-to] interval and step
-        "victim_percentage": ([0.0, 0.3], 0.1),
-        "freshness_cut_off_value": ([100, 400], 100),
+experiments_seq = [
+    {
+        "ignore_first_n_results": 500,
+        "sample_size": 3000,
+        "knobs": {
+            "re_route_every_ticks": 0
+        }
+    },
+    {
+        "ignore_first_n_results": 500,
+        "sample_size": 3000,
+        "knobs": {
+            "re_route_every_ticks": 5
+        }
+    },
+    {
+        "ignore_first_n_results": 500,
+        "sample_size": 3000,
+        "knobs": {
+            "re_route_every_ticks": 10
+        }
+    },
+    {
+        "ignore_first_n_results": 500,
+        "sample_size": 3000,
+        "knobs": {
+            "re_route_every_ticks": 15
+        }
+    },
+    {
+        "ignore_first_n_results": 500,
+        "sample_size": 3000,
+        "knobs": {
+            "re_route_every_ticks": 20
+        }
     }
-}
+]

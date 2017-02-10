@@ -43,6 +43,13 @@ def experimentFunction(wf, exp):
                 error("could not reducing data set: " + str(new_data))
             i += 1
             process("CollectSamples | ", i, sample_size)
+        for cp in wf.secondary_data_providers:
+            new_data = cp["instance"].returnDataListNonBlocking()
+            for nd in new_data:
+                try:
+                    exp["state"] = cp["data_reducer"](exp["state"], nd)
+                except:
+                    error("could not reducing data set: " + str(nd))
     print("")
 
     try:
@@ -52,6 +59,7 @@ def experimentFunction(wf, exp):
         error("evaluator failed")
 
     info("> ResultValue    | " + str(result))
+    info("> FullState      | " + str(exp["state"]))
     log_results(wf.folder, exp["knobs"].values() + [result])
 
     return result

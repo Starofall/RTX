@@ -10,3 +10,8 @@ class DataProvider:
     def returnData(self):
         """ returns a single value from the queue OR from a rest call """
         pass
+
+
+    def returnDataListNonBlocking(self):
+        """ returns a list of all available data without waiting for it """
+        pass

@@ -11,7 +11,7 @@ from rtxlib.dataproviders.DataProvider import DataProvider
 
 
 class KafkaConsumerDataProvider(DataProvider):
-    def __init__(self, wf,cp):
+    def __init__(self, wf, cp):
         from kafka import KafkaConsumer
         from flask import json
         self.callBackFunction = None
@@ -63,4 +63,16 @@ class KafkaConsumerDataProvider(DataProvider):
         except StopIteration:
             inline_print(
                 Fore.RED + "> WARNING - No message present within three seconds                          " + Fore.RESET)
+            return None
+
+    def returnDataListNonBlocking(self):
+        try:
+            values = []
+            partitions = self.consumer.poll(5)
+            if len(partitions) > 0:
+                for p in partitions:
+                    for response in partitions[p]:
+                        values.append(response.value)
+            return values
+        except StopIteration:
             return None
