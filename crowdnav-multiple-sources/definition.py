@@ -4,14 +4,14 @@ name = "CrowdNav-Step"
 execution_strategy = {
     "type": "step_explorer",
     # If new changes are not instantly visible, we want to ignore some results after state changes
-    "ignore_first_n_results": 50,
+    "ignore_first_n_results": 10,
     # How many samples of data to receive for one run
-    "sample_size": 200,
+    "sample_size": 20,
     # The variables to modify
     "knobs": {
         # defines a [from-to] interval and step
         # "exploration_percentage": ([0.0, 0.4], 0.1),
-        "re_route_every_ticks": ([0, 10], 2)
+        "re_route_every_ticks": ([0, 6], 1)
     }
 }
 
@@ -53,6 +53,16 @@ def performance_data_reducer(state, newData):
     return state
 
 
+def routing_data_reducer(state, newData):
+    cnt = state["routing_count"]
+    state["routing_avg"] = (state["routing_avg"] * cnt + newData["duration"]) / (cnt + 1)
+    state["routing_count"] = cnt + 1
+    # if state["routing_count"] > 100 and state["routing_avg"] > 20:
+    # raise StopIteration("routing got too exponsive")
+    # raise RuntimeError("stop the whole workflow")
+    return state
+
+
 primary_data_provider = {
     "type": "kafka_consumer",
     "kafka_uri": "kafka:9092",
@@ -68,6 +78,13 @@ secondary_data_providers = [
         "topic": "crowd-nav-performance",
         "serializer": "JSON",
         "data_reducer": performance_data_reducer
+    },
+    {
+        "type": "kafka_consumer",
+        "kafka_uri": "kafka:9092",
+        "topic": "crowd-nav-routing",
+        "serializer": "JSON",
+        "data_reducer": routing_data_reducer
     }
 ]
 
@@ -84,7 +101,7 @@ change_provider = {
 
 
 def evaluator(resultState):
-    return resultState["avg_overhead"]
+    return resultState["routing_avg"]
 
 
 def state_initializer(state):
@@ -92,6 +109,8 @@ def state_initializer(state):
     state["avg_overhead"] = 0
     state["duration_avg"] = 0
     state["duration_count"] = 0
+    state["routing_avg"] = 0
+    state["routing_count"] = 0
     return state
 
 

@@ -34,24 +34,35 @@ def experimentFunction(wf, exp):
     # start collecting data
     sample_size = exp["sample_size"]
     i = 0
-    while i < sample_size:
-        new_data = wf.primary_data_provider["instance"].returnData()
-        if new_data is not None:
-            try:
-                exp["state"] = wf.primary_data_provider["data_reducer"](exp["state"], new_data)
-            except:
-                error("could not reducing data set: " + str(new_data))
-            i += 1
-            process("CollectSamples | ", i, sample_size)
-        for cp in wf.secondary_data_providers:
-            new_data = cp["instance"].returnDataListNonBlocking()
-            for nd in new_data:
+    try:
+        while i < sample_size:
+            new_data = wf.primary_data_provider["instance"].returnData()
+            if new_data is not None:
                 try:
-                    exp["state"] = cp["data_reducer"](exp["state"], nd)
+                    exp["state"] = wf.primary_data_provider["data_reducer"](exp["state"], new_data)
+                except StopIteration:
+                    raise StopIteration()  # just fwd
+                except RuntimeError:
+                    raise RuntimeError()  # just fwd
                 except:
-                    error("could not reducing data set: " + str(nd))
-    print("")
-
+                    error("could not reducing data set: " + str(new_data))
+                i += 1
+                process("CollectSamples | ", i, sample_size)
+            for cp in wf.secondary_data_providers:
+                new_data = cp["instance"].returnDataListNonBlocking()
+                for nd in new_data:
+                    try:
+                        exp["state"] = cp["data_reducer"](exp["state"], nd)
+                    except StopIteration:
+                        raise StopIteration()  # just
+                    except RuntimeError:
+                        raise RuntimeError()  # just fwd
+                    except:
+                        error("could not reducing data set: " + str(nd))
+        print("")
+    except StopIteration:
+        # this iteration should stop asap
+        error("This experiment got stopped as requested by a StopIteration exception")
     try:
         result = wf.evaluator(exp["state"])
     except:

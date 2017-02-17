@@ -28,21 +28,22 @@ def execute_workflow(wf):
     init_pre_processors(wf)
     init_change_provider(wf)
     init_data_providers(wf)
-    # start the right execution strategy
-    if wf.execution_strategy["type"] == "sequential":
-        log_results(wf.folder, wf.execution_strategy[0]["knobs"].keys() + ["result"], append=False)
-        start_sequential_strategy(wf)
 
-    elif wf.execution_strategy["type"] == "self_optimizer":
-        log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)
-        start_self_optimizer_strategy(wf)
+    try:
+        # start the right execution strategy
+        if wf.execution_strategy["type"] == "sequential":
+            log_results(wf.folder, wf.execution_strategy[0]["knobs"].keys() + ["result"], append=False)
+            start_sequential_strategy(wf)
 
-    elif wf.execution_strategy["type"] == "step_explorer":
-        log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)
-        start_step_strategy(wf)
+        elif wf.execution_strategy["type"] == "self_optimizer":
+            log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)
+            start_self_optimizer_strategy(wf)
 
-    else:
-        error("no valid execution_strategy")
+        elif wf.execution_strategy["type"] == "step_explorer":
+            log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)
+            start_step_strategy(wf)
+    except RuntimeError:
+        error("Stopped the whole workflow as requested by a RuntimeError")
     # finished
     info(">")
     try:
