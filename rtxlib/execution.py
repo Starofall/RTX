@@ -39,6 +39,7 @@ def experimentFunction(wf, exp):
             new_data = wf.primary_data_provider["instance"].returnData()
             if new_data is not None:
                 try:
+                    # print(new_data)
                     exp["state"] = wf.primary_data_provider["data_reducer"](exp["state"], new_data)
                 except StopIteration:
                     raise StopIteration()  # just fwd

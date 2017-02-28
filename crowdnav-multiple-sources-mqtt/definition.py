@@ -4,18 +4,15 @@ name = "CrowdNav-Step"
 execution_strategy = {
     "type": "step_explorer",
     # If new changes are not instantly visible, we want to ignore some results after state changes
-    "ignore_first_n_results": 10000,
+    "ignore_first_n_results": 100,
     # How many samples of data to receive for one run
-    "sample_size": 10000,
+    "sample_size": 1000,
     # The variables to modify
     "knobs": {
         # defines a [from-to] interval and step
         # "exploration_percentage": ([0.0, 0.4], 0.1),
-        "re_route_every_ticks": ([0, 100], 100)
-        # "total_car_counter": ([100,1500], 100)
-        # "freshness_cut_off_value": ([90, 90], 10)
-        # "route_random_sigma": ([0.0 , 0.5], 0.1)
-        # "average_edge_duration_factor": ([0.5, 1.5], 0.1)
+        # "re_route_every_ticks": ([0, 6], 1)
+        "total_car_counter": ([50,1000], 50)
     }
 }
 
@@ -68,6 +65,8 @@ def routing_data_reducer(state, newData):
 
 
 primary_data_provider = {
+    # Starting MQTT (mosquitto)
+    # docker run --name mqtt -d -p 1883:1883 -p 9001:9001 toke/mosquitto
     "type": "kafka_consumer",
     "kafka_uri": "kafka:9092",
     "topic": "crowd-nav-trips",
