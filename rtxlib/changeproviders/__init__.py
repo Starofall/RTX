@@ -1,4 +1,5 @@
 from rtxlib import error
+from rtxlib.changeproviders.HTTPRequestChangeProvider import HTTPRequestChangeProvider
 from rtxlib.changeproviders.KafkaProducerChangeProvider import KafkaProducerChangeProvider
 from rtxlib.changeproviders.MQTTPublisherChangeProvider import MQTTPublisherChangeProvider
 
@@ -10,9 +11,8 @@ def init_change_provider(wf):
         cp["instance"] = KafkaProducerChangeProvider(wf, cp)
     elif cp["type"] == "mqtt_publisher":
         cp["instance"] = MQTTPublisherChangeProvider(wf, cp)
-    elif cp["type"] == "http_change_requests":
-        error("> Not implemented")
-        exit(1)
+    elif cp["type"] == "http_request":
+        cp["instance"] = HTTPRequestChangeProvider(wf, cp)
     else:
         error("Not a valid changeProvider")
         exit(1)

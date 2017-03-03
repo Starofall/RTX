@@ -1,5 +1,6 @@
 from logging import error
 
+from rtxlib.dataproviders.HTTPRequestDataProvider import HTTPRequestDataProvider
 from rtxlib.dataproviders.KafkaConsumerDataProvider import KafkaConsumerDataProvider
 from rtxlib.dataproviders.MQTTListenerDataProvider import MQTTListenerDataProvider
 
@@ -15,7 +16,7 @@ def createInstance(wf, cp):
         cp["instance"] = KafkaConsumerDataProvider(wf, cp)
     elif cp["type"] == "mqtt_listener":
         cp["instance"] = MQTTListenerDataProvider(wf, cp)
-    elif cp["type"] == "http_data_requests":
-        error("> Not implemented")
+    elif cp["type"] == "http_request":
+        cp["instance"] = HTTPRequestDataProvider(wf, cp)
     else:
         error("Not a valid data_provider")

@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name='RTX',
-    version='0.1',
+    version='0.2',
     long_description="real-time experimentation",
     packages=find_packages(),
     include_package_data=False,
@@ -14,6 +14,7 @@ setup(
         'flask',
         'pandas',
         'seaborn',
-        'paho-mqtt'
+        'paho-mqtt',
+        'requests'
     ]
 )

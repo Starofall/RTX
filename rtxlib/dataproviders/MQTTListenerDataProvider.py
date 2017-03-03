@@ -6,7 +6,6 @@ from colorama import Fore
 from flask import json
 from paho import mqtt
 import paho.mqtt.client as mqtt
-from paho.mqtt import subscribe
 
 from rtxlib import info, error, debug, warn, direct_print, inline_print
 from rtxlib.dataproviders.DataProvider import DataProvider
@@ -47,10 +46,6 @@ class MQTTListenerDataProvider(DataProvider):
     def on_message(self, client, userdata, message):
         # we deserialize each message that comes from mqtt and store it in a queue
         self.queue.append(self.serialize_function(message.payload))
-
-    def reset(self):
-        # not used for MQTT, as there is no state to reset
-        pass
 
     def returnData(self):
         try:

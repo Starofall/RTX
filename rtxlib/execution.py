@@ -1,14 +1,19 @@
+import time
 from colorama import Fore
 
 from rtxlib import info, error, warn, direct_print, process, log_results
 
+current_milli_time = lambda: int(round(time.time() * 1000))
+
 
 def experimentFunction(wf, exp):
+    startTime = current_milli_time()
     # remove all old data from the queues
     wf.primary_data_provider["instance"].reset()
 
     # start
     info(">")
+
     info("> KnobValues     | " + str(exp["knobs"]))
 
     # create new state
@@ -70,8 +75,15 @@ def experimentFunction(wf, exp):
         result = 0
         error("evaluator failed")
 
-    info("> ResultValue    | " + str(result))
+    if hasattr(wf, "experimentCouter"):
+        wf.experimentCouter += 1
+    else:
+        wf.experimentCouter = 1
+    info("> Statistics     | " + str(wf.experimentCouter) + "/" + str(wf.totalExperiments)
+         + " took " + str(current_milli_time() - startTime) + "ms")
     info("> FullState      | " + str(exp["state"]))
+    info("> ResultValue    | " + str(result))
+
     log_results(wf.folder, exp["knobs"].values() + [result])
 
     return result

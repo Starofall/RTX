@@ -2,6 +2,8 @@
 import sys
 import imp
 
+import rtxlib
+
 from rtxlib import info, error, debug
 from rtxlib.workflow import execute_workflow
 from rtxlib.report import plot
@@ -34,7 +36,10 @@ if __name__ == '__main__':
         except ImportError as e:
             error("Import failed: " + str(e))
             exit(1)
-
+        # setting global variable log_folder for logging and clear log
+        rtxlib.LOG_FOLDER = wf.folder
+        rtxlib.clearOldLog()
+        # look at the command
         if cmd == "start":
             info("> Starting RTX experiment...")
             # Call WorkflowExecutor on the loaded workflow

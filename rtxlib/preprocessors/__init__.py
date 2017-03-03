@@ -11,3 +11,12 @@ def init_pre_processors(wf):
             p["instance"] = SparkPreProcessor(wf, p)
         else:
             info("> Preprocessor   | None", Fore.CYAN)
+
+
+def kill_pre_processors(wf):
+    try:
+        for p in wf.pre_processors:
+            p["instance"].shutdown()
+            info("> Shutting down Spark preprocessor")
+    except AttributeError:
+        pass

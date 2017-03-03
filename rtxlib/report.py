@@ -42,7 +42,7 @@ def plot(wf):
 
         results = results_dataframe.pivot(*header)
 
-        ax = sns.heatmap(results, annot=True, fmt=".4f", linewidths=.5)
+        ax = sns.heatmap(results, annot=True, fmt=".1f", linewidths=.5)
         fig = ax.get_figure()
         fig.savefig(plot_file)
         fig.show()

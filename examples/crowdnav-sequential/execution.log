@@ -1,0 +1,33 @@
+
+> Starting RTX experiment...
+######################################
+> Workflow       | CrowdNav-Step
+> KafkaProducer  | JSON | URI: kafka:9092 | Topic: crowd-nav-commands
+> KafkaConsumer  | JSON | URI: kafka:9092 | Topic: crowd-nav-trips
+> ExecStrategy   | Sequential
+>
+> KnobValues     | {'route_random_sigma': 0.0}
+> Statistics     | 1/4 took 15085ms
+> FullState      | {'count': 100, 'avg_overhead': 2.895997981061106}
+> ResultValue    | 2.89599798106
+>
+> KnobValues     | {'route_random_sigma': 0.2}
+> Statistics     | 2/4 took 12609ms
+> FullState      | {'count': 100, 'avg_overhead': 3.306667002588571}
+> ResultValue    | 3.30666700259
+>
+> KnobValues     | {'route_random_sigma': 0.6}
+> Statistics     | 3/4 took 13882ms
+> FullState      | {'count': 100, 'avg_overhead': 3.877790356417941}
+> ResultValue    | 3.87779035642
+>
+> KnobValues     | {'route_random_sigma': 0.9}
+> Statistics     | 4/4 took 11414ms
+> FullState      | {'count': 100, 'avg_overhead': 3.5816314351476923}
+> ResultValue    | 3.58163143515
+>
+> Finished workflow
+######################################
+> Reporting on   | CrowdNav-Step
+> Found 1 knob, creating scatter plot...
+> Plot saved at ./examples/crowdnav-sequential/scatter_plot.png
