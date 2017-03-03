@@ -12,7 +12,6 @@ from rtxlib.dataproviders.DataProvider import DataProvider
 
 class KafkaConsumerDataProvider(DataProvider):
     def __init__(self, wf, cp):
-        from kafka import KafkaConsumer
         from flask import json
         self.callBackFunction = None
         try:

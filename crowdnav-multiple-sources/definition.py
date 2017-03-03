@@ -11,11 +11,13 @@ execution_strategy = {
     "knobs": {
         # defines a [from-to] interval and step
         # "exploration_percentage": ([0.0, 0.4], 0.1),
-        "re_route_every_ticks": ([0, 100], 100)
+        # "re_route_every_ticks": ([1, 99], 2)
         # "total_car_counter": ([100,1500], 100)
         # "freshness_cut_off_value": ([90, 90], 10)
         # "route_random_sigma": ([0.0 , 0.5], 0.1)
         # "average_edge_duration_factor": ([0.5, 1.5], 0.1)
+        # "edge_average_influence": ([10, 200], 10)
+        "nothing":([0,10],1)
     }
 }
 

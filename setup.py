@@ -13,6 +13,7 @@ setup(
         'scikit-optimize',
         'flask',
         'pandas',
-        'seaborn'
+        'seaborn',
+        'paho-mqtt'
     ]
 )
