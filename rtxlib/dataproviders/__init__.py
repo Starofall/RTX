@@ -6,12 +6,14 @@ from rtxlib.dataproviders.MQTTListenerDataProvider import MQTTListenerDataProvid
 
 
 def init_data_providers(wf):
+    """ creates the required data providers """
     createInstance(wf, wf.primary_data_provider)
     for cp in wf.secondary_data_providers:
         createInstance(wf, cp)
 
 
 def createInstance(wf, cp):
+    """ creates a single instance of a data provider and stores the instance as reference in the definition """
     if cp["type"] == "kafka_consumer":
         cp["instance"] = KafkaConsumerDataProvider(wf, cp)
     elif cp["type"] == "mqtt_listener":

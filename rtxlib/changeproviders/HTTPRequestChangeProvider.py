@@ -9,7 +9,10 @@ from rtxlib.changeproviders.ChangeProvider import ChangeProvider
 
 
 class HTTPRequestChangeProvider(ChangeProvider):
+    """ implements a change provider based on HTTP POST requests """
+
     def __init__(self, wf, cp):
+        # load config
         try:
             self.url = cp["url"]
             self.serializer = cp["serializer"]
@@ -25,5 +28,6 @@ class HTTPRequestChangeProvider(ChangeProvider):
             exit(1)
 
     def applyChange(self, message):
+        """ does a HTTP POST to the URL with the serialized message """
         requests.post(self.url, data=self.serialize_function(message),
                       headers={'Content-type': 'application/json', 'Accept': 'text/plain'})

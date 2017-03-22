@@ -5,11 +5,12 @@ from paho.mqtt import publish
 
 from rtxlib import info, error, debug
 from rtxlib.changeproviders.ChangeProvider import ChangeProvider
-
+from flask import json
 
 class MQTTPublisherChangeProvider(ChangeProvider):
+    """ implements a change providers using MQTT """
     def __init__(self, wf, cp):
-        from flask import json
+        # load config
         try:
             self.queue = []
             self.host = cp["host"]
@@ -29,5 +30,6 @@ class MQTTPublisherChangeProvider(ChangeProvider):
             exit(1)
 
     def applyChange(self, message):
+        """ publish a single mqtt message to the server """
         publish.single(self.topic, payload=self.serialize_function(message), qos=0,
                        retain=False, hostname=self.host, port=self.port)

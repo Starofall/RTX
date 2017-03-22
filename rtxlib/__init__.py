@@ -1,11 +1,19 @@
 from __future__ import print_function
 
-import os
-
+import time
 from colorama import Fore
-
 import sys
+import csv
 
+
+# Small util helper collection
+# mainly for logging
+
+# small helper function for
+def current_milli_time():
+    return int(round(time.time() * 1000))
+
+# Log Levels
 LEVEL_DEBUG = 4
 LEVEL_INFO = 3
 LEVEL_WARN = 2
@@ -13,17 +21,23 @@ LEVEL_ERROR = 1
 LEVEL_NONE = 0
 LOG_LEVEL = 3
 
+# Global variable for the folder to log to
 LOG_FOLDER = None
 
+
 def clearOldLog():
+    """ clears the old execution.log file """
     if LOG_FOLDER is not None:
         f = open(LOG_FOLDER + '/execution.log', 'w')
         f.write("\n")
 
+
 def logToFile(any):
+    """ appends the message to the execution.log file """
     if LOG_FOLDER is not None:
         f = open(LOG_FOLDER + '/execution.log', 'ab')
         f.write(str(any) + "\n")
+
 
 def debug(any, color=Fore.CYAN):
     if LOG_LEVEL >= LEVEL_DEBUG:
@@ -49,6 +63,7 @@ def error(any, color=Fore.RED):
 
 
 def process(preText, i, total):
+    """ used to display the progress bar while experiments run """
     sys.stdout.write('\r')
     sys.stdout.flush()
     size_str = Fore.YELLOW + "> " + preText + "["
@@ -62,21 +77,23 @@ def process(preText, i, total):
     sys.stdout.flush()
 
 
-
 def inline_print(str):
+    """ writes a line without a newline """
     sys.stdout.write('\r')
     sys.stdout.flush()
     sys.stdout.write('%s\r' % str)
     sys.stdout.flush()
 
+
 def direct_print(str):
+    """ write and flush just the string with no \n """
     import sys
     sys.stdout.write(str)
     sys.stdout.flush()
 
 
-import csv
 def log_results(experiment_folder, data, append=True):
+    """ logs the result values of an experiment to a csv file """
     try:
         if append:
             with open('./' + str(experiment_folder) + '/results.csv', 'ab') as csv_file:

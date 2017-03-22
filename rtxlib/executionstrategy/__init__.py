@@ -5,29 +5,8 @@ from rtxlib.executionstrategy.SequencialStrategy import start_sequential_strateg
 from rtxlib import log_results, error, info
 
 
-def applyInitKnobs(wf):
-    # we are done, so revert to default if given
-    if "init_knobs" in wf.execution_strategy:
-        try:
-            info("> Set the initial knobs for this workflow")
-            wf.change_provider["instance"] \
-                .applyChange(wf.change_event_creator(wf.execution_strategy["init_knobs"]))
-        except:
-            error("apply changes did not work")
-
-
-def applyDefaultKnobs(wf):
-    # we are done, so revert to default if given
-    if "default_knobs" in wf.execution_strategy:
-        try:
-            info("> Reverted back system knobs to default")
-            wf.change_provider["instance"] \
-                .applyChange(wf.change_event_creator(wf.execution_strategy["default_knobs"]))
-        except:
-            error("apply changes did not work")
-
-
-def init_execution_strategy(wf):
+def run_execution_strategy(wf):
+    """ we run the correct execution strategy """
     applyInitKnobs(wf)
     try:
         # start the right execution strategy
@@ -47,3 +26,25 @@ def init_execution_strategy(wf):
     # finished
     info(">")
     applyDefaultKnobs(wf)
+
+
+def applyInitKnobs(wf):
+    """ we are done, so revert to default if given """
+    if "pre_workflow_knobs" in wf.execution_strategy:
+        try:
+            info("> Applied the pre_workflow_knobs")
+            wf.change_provider["instance"] \
+                .applyChange(wf.change_event_creator(wf.execution_strategy["pre_workflow_knobs"]))
+        except:
+            error("apply changes did not work")
+
+
+def applyDefaultKnobs(wf):
+    """ we are done, so revert to default if given """
+    if "post_workflow_knobs" in wf.execution_strategy:
+        try:
+            info("> Applied the post_workflow_knobs")
+            wf.change_provider["instance"] \
+                .applyChange(wf.change_event_creator(wf.execution_strategy["post_workflow_knobs"]))
+        except:
+            error("apply changes did not work")

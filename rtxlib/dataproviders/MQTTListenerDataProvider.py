@@ -12,8 +12,11 @@ from rtxlib.dataproviders.DataProvider import DataProvider
 
 
 class MQTTListenerDataProvider(DataProvider):
+    """ implements data collection through mqtt using a second thread that collects data """
+
     def __init__(self, wf, cp):
         self.callBackFunction = None
+        # load the configuration
         try:
             self.queue = []
             self.host = cp["host"]
@@ -25,6 +28,7 @@ class MQTTListenerDataProvider(DataProvider):
         except KeyError as e:
             error("mqttListener definition was incomplete: " + str(e))
             exit(1)
+        # create serializer
         if self.serializer == "JSON":
             self.serialize_function = lambda m: json.loads(m.decode('utf-8'))
         else:
@@ -44,18 +48,18 @@ class MQTTListenerDataProvider(DataProvider):
             exit(1)
 
     def on_message(self, client, userdata, message):
-        # we deserialize each message that comes from mqtt and store it in a queue
+        """ we deserialize each message that comes from mqtt and store it in a queue """
         self.queue.append(self.serialize_function(message.payload))
 
     def returnData(self):
+        """ return the first element in the queue or None """
         try:
-            # return the first element in the queue
             return self.queue.pop(0)
         except IndexError:
             return None
 
     def returnDataListNonBlocking(self):
-        # returns the full queue and empties it
+        """ returns the full queue and empties it """
         values = self.queue
         self.queue = []
         return values

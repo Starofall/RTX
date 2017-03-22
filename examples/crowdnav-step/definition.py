@@ -2,8 +2,8 @@
 name = "CrowdNav-Step"
 
 execution_strategy = {
-    "ignore_first_n_results": 10000,
-    "sample_size": 10000,
+    "ignore_first_n_results": 1000,
+    "sample_size": 1000,
     "type": "step_explorer",
     "knobs": {
         "route_random_sigma": ([0.0, 1.0], 0.1),

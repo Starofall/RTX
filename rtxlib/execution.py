@@ -1,21 +1,15 @@
-import time
-from colorama import Fore
-
-from rtxlib import info, error, warn, direct_print, process, log_results
-
-current_milli_time = lambda: int(round(time.time() * 1000))
+from rtxlib import info, error, warn, direct_print, process, log_results, current_milli_time
 
 
 def experimentFunction(wf, exp):
-    startTime = current_milli_time()
+    """ executes a given experiment """
+    start_time = current_milli_time()
     # remove all old data from the queues
     wf.primary_data_provider["instance"].reset()
 
     # start
     info(">")
-
     info("> KnobValues     | " + str(exp["knobs"]))
-
     # create new state
     exp["state"] = wf.state_initializer(dict())
 
@@ -41,6 +35,7 @@ def experimentFunction(wf, exp):
     i = 0
     try:
         while i < sample_size:
+            # we start with the primary data provider using blocking returnData
             new_data = wf.primary_data_provider["instance"].returnData()
             if new_data is not None:
                 try:
@@ -54,6 +49,7 @@ def experimentFunction(wf, exp):
                     error("could not reducing data set: " + str(new_data))
                 i += 1
                 process("CollectSamples | ", i, sample_size)
+            # now we use returnDataListNonBlocking on all secondary data providers
             for cp in wf.secondary_data_providers:
                 new_data = cp["instance"].returnDataListNonBlocking()
                 for nd in new_data:
@@ -74,16 +70,19 @@ def experimentFunction(wf, exp):
     except:
         result = 0
         error("evaluator failed")
-
-    if hasattr(wf, "experimentCouter"):
-        wf.experimentCouter += 1
+    # we store the counter of this experiment in the workflow
+    if hasattr(wf, "experimentCounter"):
+        wf.experimentCounter += 1
     else:
-        wf.experimentCouter = 1
-    info("> Statistics     | " + str(wf.experimentCouter) + "/" + str(wf.totalExperiments)
-         + " took " + str(current_milli_time() - startTime) + "ms")
+        wf.experimentCounter = 1
+    # print the results
+    duration = current_milli_time() - start_time
+    info("> Statistics     | " + str(wf.experimentCounter) + "/" + str(wf.totalExperiments)
+         + " took " + str(duration) + "ms" + " - remaining ~" + str(
+        (wf.totalExperiments - wf.experimentCounter) * duration / 1000) + "sec")
     info("> FullState      | " + str(exp["state"]))
     info("> ResultValue    | " + str(result))
-
+    # log the result values into a csv file
     log_results(wf.folder, exp["knobs"].values() + [result])
-
+    # return the result value of the evaluator
     return result

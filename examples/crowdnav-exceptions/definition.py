@@ -12,10 +12,10 @@ execution_strategy = {
     "knobs": {
         "re_route_every_ticks": ([8, 32], 8)
     },
-    "init_knobs": {
+    "pre_workflow_knobs": {
         "total_car_counter": 100
     },
-    "default_knobs": {
+    "post_workflow_knobs": {
         "total_car_counter": 750,
         "re_route_every_ticks": 60
     }

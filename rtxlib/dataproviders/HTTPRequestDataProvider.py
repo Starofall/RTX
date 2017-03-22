@@ -13,8 +13,11 @@ from rtxlib.dataproviders.DataProvider import DataProvider
 
 
 class HTTPRequestDataProvider(DataProvider):
+    """ implements a data provider based on http """
+
     def __init__(self, wf, cp):
         self.callBackFunction = None
+        # load config
         try:
             self.url = cp["url"]
             self.serializer = cp["serializer"]
@@ -29,6 +32,7 @@ class HTTPRequestDataProvider(DataProvider):
             exit(1)
 
     def returnData(self):
+        """ does a http GET request and returns the result value """
         try:
             r = requests.get(self.url)
             return self.serialize_function(r.content)
@@ -37,7 +41,10 @@ class HTTPRequestDataProvider(DataProvider):
             return None
 
     def returnDataListNonBlocking(self):
-        # returns the full queue and empties it
-        values = self.queue
-        self.queue = []
-        return values
+        """ by logic this can not be non-blocking, so it is implemented as returnData """
+        try:
+            r = requests.get(self.url)
+            return [self.serialize_function(r.content)]
+        except:
+            error("HTTP Connection Problems")
+            return None

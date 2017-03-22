@@ -5,6 +5,7 @@ from rtxlib.execution import experimentFunction
 
 
 def start_sequential_strategy(wf):
+    """ executes all experiments from the definition file """
     info("> ExecStrategy   | Sequential", Fore.CYAN)
     wf.totalExperiments = len(wf.execution_strategy["knobs"])
     for kn in wf.execution_strategy["knobs"]:

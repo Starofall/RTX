@@ -1,19 +1,17 @@
-from time import sleep
-
 import logging
-
 from colorama import Fore
 from kafka import KafkaConsumer
-from kafka import TopicPartition
-
+from flask import json
 from rtxlib import info, error, debug, warn, direct_print, inline_print
 from rtxlib.dataproviders.DataProvider import DataProvider
 
 
 class KafkaConsumerDataProvider(DataProvider):
+    """ implements a data provider for kafaka """
+
     def __init__(self, wf, cp):
-        from flask import json
         self.callBackFunction = None
+        # load config
         try:
             self.kafka_uri = cp["kafka_uri"]
             self.topic = cp["topic"]
@@ -32,20 +30,23 @@ class KafkaConsumerDataProvider(DataProvider):
             exit(1)
         # try to connect
         try:
+            # disable annoying logging
             logging.getLogger("kafka.coordinator.consumer").setLevel("ERROR")
             logging.getLogger("kafka.conn").setLevel("ERROR")
+            # connect to kafka
             self.consumer = KafkaConsumer(bootstrap_servers=self.kafka_uri,
                                           value_deserializer=self.serialize_function,
                                           enable_auto_commit=False,
                                           group_id=None,
                                           consumer_timeout_ms=3000)
+            # subscribe to the requested topic
             self.consumer.subscribe([self.topic])
         except RuntimeError as e:
             error("connection to kafka failed: " + str(e))
             exit(1)
 
     def reset(self):
-        # new consumer to get to the current position of the queue
+        """ creates a new consumer to get to the current position of the queue """
         try:
             self.consumer = KafkaConsumer(bootstrap_servers=self.kafka_uri,
                                           value_deserializer=self.serialize_function,
@@ -57,6 +58,7 @@ class KafkaConsumerDataProvider(DataProvider):
             exit(1)
 
     def returnData(self):
+        """ returns the next data (blocking) """
         try:
             return next(self.consumer).value
         except StopIteration:
@@ -65,6 +67,7 @@ class KafkaConsumerDataProvider(DataProvider):
             return None
 
     def returnDataListNonBlocking(self):
+        """ polls for 5ms and returns all messages that came in """
         try:
             values = []
             partitions = self.consumer.poll(5)
