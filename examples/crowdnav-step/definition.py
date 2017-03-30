@@ -12,7 +12,7 @@ execution_strategy = {
 }
 
 
-def primary_data_reducer(state, newData):
+def primary_data_reducer(state, newData, wf):
     cnt = state["count"]
     state["avg_overhead"] = (state["avg_overhead"] * cnt + newData["overhead"]) / (cnt + 1)
     state["count"] = cnt + 1
@@ -35,20 +35,11 @@ change_provider = {
 }
 
 
-def evaluator(resultState):
+def evaluator(resultState, wf):
     return resultState["avg_overhead"]
 
 
-def state_initializer(state):
+def state_initializer(state, wf):
     state["count"] = 0
     state["avg_overhead"] = 0
     return state
-
-
-def change_event_creator(variables):
-    return variables
-
-
-secondary_data_providers = []
-
-pre_processors = []

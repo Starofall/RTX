@@ -1,7 +1,7 @@
 from rtxlib import info, error, warn, direct_print, process, log_results, current_milli_time
 
 
-def _defaultChangeProvider(variables):
+def _defaultChangeProvider(variables,wf):
     """ by default we just forword the message to the change provider """
     return variables
 
@@ -22,11 +22,11 @@ def experimentFunction(wf, exp):
     info(">")
     info("> KnobValues     | " + str(exp["knobs"]))
     # create new state
-    exp["state"] = wf.state_initializer(dict())
+    exp["state"] = wf.state_initializer(dict(),wf)
 
     # apply changes to system
     try:
-        wf.change_provider["instance"].applyChange(change_creator(exp["knobs"]))
+        wf.change_provider["instance"].applyChange(change_creator(exp["knobs"],wf))
     except:
         error("apply changes did not work")
 
@@ -51,7 +51,7 @@ def experimentFunction(wf, exp):
             if new_data is not None:
                 try:
                     # print(new_data)
-                    exp["state"] = wf.primary_data_provider["data_reducer"](exp["state"], new_data)
+                    exp["state"] = wf.primary_data_provider["data_reducer"](exp["state"], new_data,wf)
                 except StopIteration:
                     raise StopIteration()  # just fwd
                 except RuntimeError:
@@ -66,7 +66,7 @@ def experimentFunction(wf, exp):
                     new_data = cp["instance"].returnDataListNonBlocking()
                     for nd in new_data:
                         try:
-                            exp["state"] = cp["data_reducer"](exp["state"], nd)
+                            exp["state"] = cp["data_reducer"](exp["state"], nd,wf)
                         except StopIteration:
                             raise StopIteration()  # just
                         except RuntimeError:
@@ -78,7 +78,7 @@ def experimentFunction(wf, exp):
         # this iteration should stop asap
         error("This experiment got stopped as requested by a StopIteration exception")
     try:
-        result = wf.evaluator(exp["state"])
+        result = wf.evaluator(exp["state"],wf)
     except:
         result = 0
         error("evaluator failed")

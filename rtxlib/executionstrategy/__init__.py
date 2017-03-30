@@ -5,6 +5,8 @@ from rtxlib.executionstrategy.SequencialStrategy import start_sequential_strateg
 
 from rtxlib import log_results, error, info
 
+from rtxlib.executionstrategy.UncorrelatedSelfOptimizerStrategy import start_uncorrelated_self_optimizer_strategy
+
 
 def run_execution_strategy(wf):
     """ we run the correct execution strategy """
@@ -18,6 +20,10 @@ def run_execution_strategy(wf):
         elif wf.execution_strategy["type"] == "self_optimizer":
             log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)
             start_self_optimizer_strategy(wf)
+
+        elif wf.execution_strategy["type"] == "uncorrelated_self_optimizer":
+            log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)
+            start_uncorrelated_self_optimizer_strategy(wf)
 
         elif wf.execution_strategy["type"] == "step_explorer":
             log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)

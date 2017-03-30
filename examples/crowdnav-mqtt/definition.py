@@ -10,19 +10,19 @@ execution_strategy = {
     "ignore_first_n_results": 1000,
     "sample_size": 1000,
     "knobs": {
-        "total_car_counter": ([200,1000], 200)
+        "total_car_counter": ([200, 1000], 200)
     }
 }
 
 
-def primary_data_reducer(state, newData):
+def primary_data_reducer(state, newData, wf):
     cnt = state["count"]
     state["avg_overhead"] = (state["avg_overhead"] * cnt + newData["overhead"]) / (cnt + 1)
     state["count"] = cnt + 1
     return state
 
 
-def performance_data_reducer(state, newData):
+def performance_data_reducer(state, newData, wf):
     cnt = state["duration_count"]
     state["duration_avg"] = (state["duration_avg"] * cnt + newData["duration"]) / (cnt + 1)
     state["duration_count"] = cnt + 1
@@ -56,20 +56,13 @@ change_provider = {
 }
 
 
-def evaluator(resultState):
+def evaluator(resultState, wf):
     return resultState["avg_overhead"]
 
 
-def state_initializer(state):
+def state_initializer(state, wf):
     state["count"] = 0
     state["avg_overhead"] = 0
     state["duration_avg"] = 0
     state["duration_count"] = 0
     return state
-
-
-def change_event_creator(variables):
-    return variables
-
-
-pre_processors = []

@@ -10,7 +10,7 @@ execution_strategy = {
 }
 
 
-def primary_data_reducer(state, newData):
+def primary_data_reducer(state, newData,wf):
     state["count"] += 1
     return state
 
@@ -26,10 +26,10 @@ change_provider = {
 }
 
 
-def evaluator(resultState):
+def evaluator(resultState,wf):
     return resultState["count"]
 
 
-def state_initializer(state):
+def state_initializer(state,wf):
     state["count"] = 0
     return state

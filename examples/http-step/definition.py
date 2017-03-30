@@ -18,7 +18,7 @@ execution_strategy = {
 }
 
 
-def primary_data_reducer(state, newData):
+def primary_data_reducer(state, newData, wf):
     cnt = state["count"]
     state["avg_result"] = (state["avg_result"] * cnt + newData["result"]) / (cnt + 1)
     state["count"] = cnt + 1
@@ -38,21 +38,12 @@ change_provider = {
     "serializer": "JSON",
 }
 
-secondary_data_providers = []
 
-
-def evaluator(resultState):
+def evaluator(resultState, wf):
     return resultState["avg_result"]
 
 
-def state_initializer(state):
+def state_initializer(state, wf):
     state["count"] = 0
     state["avg_result"] = 0
     return state
-
-
-def change_event_creator(variables):
-    return variables
-
-
-pre_processors = []

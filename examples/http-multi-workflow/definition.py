@@ -1,4 +1,4 @@
-# Example for using HTTP (with CrowdNav)
+# Example for using multi workflow
 #
 # Start the RTX test web service first
 name = "Example-HTTP-Gauss"
@@ -6,7 +6,7 @@ name = "Example-HTTP-Gauss"
 execution_strategy = {
     "ignore_first_n_results": 0,
     "sample_size": 100,
-    "type": "self_optimizer",
+    "type": "uncorrelated_self_optimizer",
     "optimizer_method": "gauss",
     "optimizer_iterations": 20,
     "optimizer_random_starts": 10,

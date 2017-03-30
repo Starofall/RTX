@@ -1,3 +1,4 @@
+import numpy as np
 from colorama import Fore
 from rtxlib import info, error
 
@@ -35,14 +36,18 @@ def plot(wf):
 
     # 2 input -> 1 output variables case
     elif len(header) == 3:
+
         info("> Found 2 knobs, creating heat map...", Fore.CYAN)
         plot_file = plot_file_dir + '/heatmap.png'
         results = results_data_frame.pivot(*header)
-        ax = sns.heatmap(results, annot=True, fmt=".1f", linewidths=.5)
-        fig = ax.get_figure()
-        fig.savefig(plot_file)
-        fig.show()
-        info("> Plot saved at " + plot_file, Fore.CYAN)
+        try:
+            ax = sns.heatmap(results, annot=True, fmt=".1f", linewidths=.5)
+            fig = ax.get_figure()
+            fig.savefig(plot_file)
+            fig.show()
+            info("> Plot saved at " + plot_file, Fore.CYAN)
+        except ValueError:
+            info("> This strategy does not support heatmap generation")
 
     else:
         info("> Cannot plot these results (RTX can only plot experiments of one of two variables for now)", Fore.CYAN)

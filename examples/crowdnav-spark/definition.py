@@ -11,13 +11,14 @@ execution_strategy = {
 }
 
 pre_processors = [{
-    "type":"spark",
+    "type": "spark",
     "submit_mode": "client_jar",
     "job_file": "CrowdNavSpark-assembly-1.0.jar",
     "job_class": "crowdnav.Main"
 }]
 
-def primary_data_reducer(state, newData):
+
+def primary_data_reducer(state, newData, wf):
     new_overhead = newData["overhead"]  # is already the sum
     new_count = newData["count"]
     state["total_overhead"] = state["total_overhead"] + new_overhead
@@ -41,18 +42,11 @@ change_provider = {
 }
 
 
-def evaluator(resultState):
+def evaluator(resultState, wf):
     return resultState["total_overhead"] / resultState["count"]
 
 
-def state_initializer(state):
+def state_initializer(state, wf):
     state["count"] = 0
     state["total_overhead"] = 0
     return state
-
-
-def change_event_creator(variables):
-    return variables
-
-
-secondary_data_providers = []

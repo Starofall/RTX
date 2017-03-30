@@ -22,21 +22,21 @@ execution_strategy = {
 }
 
 
-def primary_data_reducer(state, newData):
+def primary_data_reducer(state, newData, wf):
     cnt = state["count"]
     state["avg_overhead"] = (state["avg_overhead"] * cnt + newData["overhead"]) / (cnt + 1)
     state["count"] = cnt + 1
     return state
 
 
-def performance_data_reducer(state, newData):
+def performance_data_reducer(state, newData, wf):
     cnt = state["duration_count"]
     state["duration_avg"] = (state["duration_avg"] * cnt + newData["duration"]) / (cnt + 1)
     state["duration_count"] = cnt + 1
     return state
 
 
-def routing_data_reducer(state, newData):
+def routing_data_reducer(state, newData, wf):
     cnt = state["routing_count"]
     state["routing_avg"] = (state["routing_avg"] * cnt + newData["duration"]) / (cnt + 1)
     state["routing_count"] = cnt + 1
@@ -81,11 +81,11 @@ change_provider = {
 }
 
 
-def evaluator(resultState):
+def evaluator(resultState, wf):
     return resultState["avg_overhead"]
 
 
-def state_initializer(state):
+def state_initializer(state, wf):
     state["count"] = 0
     state["avg_overhead"] = 0
     state["duration_avg"] = 0
@@ -95,8 +95,5 @@ def state_initializer(state):
     return state
 
 
-def change_event_creator(variables):
+def change_event_creator(variables, wf):
     return variables
-
-
-pre_processors = []
