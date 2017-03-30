@@ -1,3 +1,4 @@
+from rtxlib.executionstrategy.ForeverStrategy import start_forever_strategy
 from rtxlib.executionstrategy.StepStrategy import start_step_strategy
 from rtxlib.executionstrategy.SelfOptimizerStrategy import start_self_optimizer_strategy
 from rtxlib.executionstrategy.SequencialStrategy import start_sequential_strategy
@@ -21,6 +22,9 @@ def run_execution_strategy(wf):
         elif wf.execution_strategy["type"] == "step_explorer":
             log_results(wf.folder, wf.execution_strategy["knobs"].keys() + ["result"], append=False)
             start_step_strategy(wf)
+
+        elif wf.execution_strategy["type"] == "forever":
+            start_forever_strategy(wf)
     except RuntimeError:
         error("Stopped the whole workflow as requested by a RuntimeError")
     # finished

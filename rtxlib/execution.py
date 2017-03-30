@@ -1,11 +1,22 @@
 from rtxlib import info, error, warn, direct_print, process, log_results, current_milli_time
 
 
+def _defaultChangeProvider(variables):
+    """ by default we just forword the message to the change provider """
+    return variables
+
+
 def experimentFunction(wf, exp):
     """ executes a given experiment """
     start_time = current_milli_time()
     # remove all old data from the queues
     wf.primary_data_provider["instance"].reset()
+
+    # load change event creator or use a default
+    if hasattr(wf, "change_event_creator"):
+        change_creator = wf.change_event_creator
+    else:
+        change_creator = _defaultChangeProvider
 
     # start
     info(">")
@@ -15,7 +26,7 @@ def experimentFunction(wf, exp):
 
     # apply changes to system
     try:
-        wf.change_provider["instance"].applyChange(wf.change_event_creator(exp["knobs"]))
+        wf.change_provider["instance"].applyChange(change_creator(exp["knobs"]))
     except:
         error("apply changes did not work")
 
@@ -50,17 +61,18 @@ def experimentFunction(wf, exp):
                 i += 1
                 process("CollectSamples | ", i, sample_size)
             # now we use returnDataListNonBlocking on all secondary data providers
-            for cp in wf.secondary_data_providers:
-                new_data = cp["instance"].returnDataListNonBlocking()
-                for nd in new_data:
-                    try:
-                        exp["state"] = cp["data_reducer"](exp["state"], nd)
-                    except StopIteration:
-                        raise StopIteration()  # just
-                    except RuntimeError:
-                        raise RuntimeError()  # just fwd
-                    except:
-                        error("could not reducing data set: " + str(nd))
+            if hasattr(wf, "secondary_data_providers"):
+                for cp in wf.secondary_data_providers:
+                    new_data = cp["instance"].returnDataListNonBlocking()
+                    for nd in new_data:
+                        try:
+                            exp["state"] = cp["data_reducer"](exp["state"], nd)
+                        except StopIteration:
+                            raise StopIteration()  # just
+                        except RuntimeError:
+                            raise RuntimeError()  # just fwd
+                        except:
+                            error("could not reducing data set: " + str(nd))
         print("")
     except StopIteration:
         # this iteration should stop asap
@@ -77,9 +89,11 @@ def experimentFunction(wf, exp):
         wf.experimentCounter = 1
     # print the results
     duration = current_milli_time() - start_time
-    info("> Statistics     | " + str(wf.experimentCounter) + "/" + str(wf.totalExperiments)
-         + " took " + str(duration) + "ms" + " - remaining ~" + str(
-        (wf.totalExperiments - wf.experimentCounter) * duration / 1000) + "sec")
+    # do not show stats for forever strategy
+    if wf.totalExperiments > 0:
+        info("> Statistics     | " + str(wf.experimentCounter) + "/" + str(wf.totalExperiments)
+             + " took " + str(duration) + "ms" + " - remaining ~" + str(
+            (wf.totalExperiments - wf.experimentCounter) * duration / 1000) + "sec")
     info("> FullState      | " + str(exp["state"]))
     info("> ResultValue    | " + str(result))
     # log the result values into a csv file

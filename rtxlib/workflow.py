@@ -14,10 +14,8 @@ def execute_workflow(wf):
         info("######################################", Fore.CYAN)
         info("> Workflow       | " + str(wf.name), Fore.CYAN)
         # check variables
-        a = wf.pre_processors
         b = wf.change_provider
         c = wf.primary_data_provider
-        c = wf.secondary_data_providers
         d = wf.execution_strategy
     except KeyError as e:
         error("definition.py is missing value " + str(e))
