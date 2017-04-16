@@ -1,3 +1,12 @@
+
+# Application to Traffic Control
+One of the use cases of RTX is that of traffic control.
+To see it in action, first do the minimal setup (instructions below), then checkout the A9 traffic simulation from
+https://github.com/iliasger/Traffic-Simulation-A9, start it, and then issue 
+```
+python rtx.ph start trafficA9
+```
+
 # Real-Time Experimentation (RTX)
 
 ![Banner](https://raw.githubusercontent.com/Starofall/RTX/master/banner.PNG)
