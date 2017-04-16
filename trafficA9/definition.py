@@ -40,11 +40,11 @@ def evaluator(resultState, wf):
     if resultState["occupancies_avg"]["upper"] > 2.5 and resultState["occupancies_avg"]["lower"] > 2.5:
         # open hard shoulder
         info("Command to open hard shoulder sent...", Fore.CYAN)
-        wf.change_provider.applyChange({"hard_shoulder": 1})
+        wf.change_provider["instance"].applyChange({"hard_shoulder": 1})
     if resultState["occupancies_avg"]["upper"] < 1.5 and resultState["occupancies_avg"]["lower"] < 1.5:
         # close hard shoulder
         info("Command to close hard shoulder sent...", Fore.CYAN)
-        wf.change_provider.applyChange({"hard_shoulder": 0})
+        wf.change_provider["instance"].applyChange({"hard_shoulder": 0})
     return resultState["occupancies_avg"]
 
 def state_initializer(state, wf):
