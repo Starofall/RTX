@@ -30,6 +30,7 @@ def run_execution_strategy(wf):
             start_step_strategy(wf)
 
         elif wf.execution_strategy["type"] == "forever":
+            log_results(wf.folder, ["time","result"], append=False)
             start_forever_strategy(wf)
     except RuntimeError:
         error("Stopped the whole workflow as requested by a RuntimeError")

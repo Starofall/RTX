@@ -77,11 +77,11 @@ def experimentFunction(wf, exp):
     except StopIteration:
         # this iteration should stop asap
         error("This experiment got stopped as requested by a StopIteration exception")
-    try:
-        result = wf.evaluator(exp["state"],wf)
-    except:
-        result = 0
-        error("evaluator failed")
+    # try:
+    result = wf.evaluator(exp["state"],wf)
+    # except:
+    #     result = 0
+    #     error("evaluator failed")
     # we store the counter of this experiment in the workflow
     if hasattr(wf, "experimentCounter"):
         wf.experimentCounter += 1
@@ -97,6 +97,7 @@ def experimentFunction(wf, exp):
     info("> FullState      | " + str(exp["state"]))
     info("> ResultValue    | " + str(result))
     # log the result values into a csv file
-    log_results(wf.folder, exp["knobs"].values() + [result])
+    log_results(wf.folder, result)
+    # log_results(wf.folder, exp["knobs"].values() + [result])
     # return the result value of the evaluator
     return result
