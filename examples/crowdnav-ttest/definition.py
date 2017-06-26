@@ -10,8 +10,8 @@ exp_count =0
 
 
 execution_strategy = {
-    "ignore_first_n_results": 10,
-    "sample_size": 100,
+    "ignore_first_n_results": 1000,
+    "sample_size": 10000,
     "type": "sequential",
     "knobs": [
         {"route_random_sigma": 0.0},
