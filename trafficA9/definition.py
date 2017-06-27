@@ -45,19 +45,19 @@ def speeds_data_reducer(state, newData, wf):
 
 def evaluator(resultState, wf):
     occurrences = resultState["occurrences"]["lower"]
-    print occurrences
+    # print occurrences
     occurrences_count = resultState["occurrences_count"]["lower"]
-    print occurrences_count
+    # print occurrences_count
     product = occurrences / occurrences_count
-    print product
+    # print product
     tick_count = resultState["tick_count"]
-    print tick_count
-    if product > 2.5:
+    # print tick_count
+    if product >= 0.2:
             # and resultState["occupancies_avg"]["upper"] > 2.5:
         info("Command to open hard shoulder sent...", Fore.CYAN)
         wf.change_provider["instance"].applyChange({"hard_shoulder": 1})
         hard_shoulder_open = True
-    if product < 1.5:
+    if product < 0.2:
             # and resultState["occupancies_avg"]["upper"] < 1.5:
         info("Command to close hard shoulder sent...", Fore.CYAN)
         wf.change_provider["instance"].applyChange({"hard_shoulder": 0})
@@ -71,12 +71,12 @@ def state_initializer(state, wf):
     state["tick_count"] = 0
     state["occurrences"] = dict()
     state["occurrences"]["lower"] = 0
-    state["occurrences"]["upper"] = 0
+    # state["occurrences"]["upper"] = 0
     state["occurrences_count"] = dict()
     state["occurrences_count"]["lower"] = 0
-    state["occurrences_count"]["upper"] = 0
-    state["speeds_avg"] = 0
-    state["speeds_count"] = 0
+    # state["occurrences_count"]["upper"] = 0
+    # state["speeds_avg"] = 0
+    # state["speeds_count"] = 0
     return state
 
 def change_event_creator(variables, wf):
