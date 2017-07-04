@@ -3,16 +3,15 @@ import os
 import pandas as pd
 from scipy import stats
 import itertools
-import json
 
 name = "CrowdNav-TTest"
 
 exp_count =0
-path_to_save = ""
+
 
 execution_strategy = {
-    "ignore_first_n_results": 10,
-    "sample_size": 10,
+    "ignore_first_n_results": 10000,
+    "sample_size": 10000,
     "type": "sequential",
     "knobs": [
         {"route_random_sigma": 0.0},
@@ -35,7 +34,6 @@ execution_strategy = {
         {"reRouteEveryTicks": 60},
         {"reRouteEveryTicks": 60},
         {"reRouteEveryTicks": 60},
-
     ]
 }
 knobs_list = []
@@ -69,39 +67,24 @@ change_provider = {
 
 def evaluator(resultState, wf):
     resultState["file"].close()
-    global path_to_save
+
     global exp_count
     iter_list = list(itertools.combinations(range(1,(exp_count + 1), 1),2))
     result = []
-
     for comb in  [i for i in iter_list if i[1] == exp_count]:
-        df1 = pd.read_csv(path_to_save + "/exp"+ str(comb[0])+ ".txt")
-        df2 = pd.read_csv(path_to_save + "/exp" + str(comb[1])+ ".txt")
+        df1 = pd.read_csv(os.path.dirname(os.path.realpath(__file__)) + "/exp" + str(comb[0])+ ".txt")
+        df2 = pd.read_csv(os.path.dirname(os.path.realpath(__file__)) + "/exp" + str(comb[1])+ ".txt")
         result.append({(knobs_list[comb[0]-1],knobs_list[comb[1]-1]) : stats.ttest_ind(df1["overhead"],df2["overhead"])[1]})
     return result
 
 
 def state_initializer(state, wf):
     global exp_count
-    global  path_to_save
     exp_count += 1
 
     state["count"] = 0
     state["overhead"] = 0
 
-    # Creatind the path of experiment session in order to save it
-    i = 1
-    while exp_count == 1:
-        if (not os.path.isdir(os.path.dirname(os.path.realpath(__file__)) + "/saved_experiments/exp" + str(i)) ) :
-            os.makedirs(os.path.dirname(os.path.realpath(__file__)) + "/saved_experiments/exp" + str(i))
-            path_to_save = os.path.dirname(os.path.realpath(__file__)) + "/saved_experiments/exp" + str(i)
-            break
-        else:
-            i +=1
-
-    # Writing necessary information for experiment session
-    with open(path_to_save + "/session_info.txt", "w") as text_file:
-        json.dump(execution_strategy, text_file)
-    state["file"] =  open(path_to_save + '/exp'+str(exp_count)+'.txt','w')
+    state["file"] =  open(os.path.dirname(os.path.realpath(__file__)) + '/exp'+str(exp_count)+'.txt','w')
     state["file"].write("count,overhead\n")
     return state
