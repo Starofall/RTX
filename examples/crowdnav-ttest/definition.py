@@ -11,8 +11,8 @@ exp_count =0
 path_to_save = ""
 
 execution_strategy = {
-    "ignore_first_n_results": 10000,
-    "sample_size": 10000,
+    "ignore_first_n_results": 10,
+    "sample_size": 10,
     "type": "sequential",
     "knobs": [
         {"route_random_sigma": 0.0},
@@ -25,18 +25,9 @@ execution_strategy = {
         {"route_random_sigma": 0.0},
         {"route_random_sigma": 0.0},
         {"route_random_sigma": 0.0},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
-        {"reRouteEveryTicks": 60},
 
-    ]
+    ],
+    "sample_size_method": "test"
 }
 knobs_list = []
 for i in execution_strategy["knobs"]:

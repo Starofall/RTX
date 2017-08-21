@@ -37,6 +37,7 @@ if __name__ == '__main__':
         rtxlib.LOG_FOLDER = wf.folder
         rtxlib.clearOldLog()
         info("> Starting RTX experiment...")
+
         execute_workflow(wf)
         plot(wf)
         exit(0)

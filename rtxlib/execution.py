@@ -1,4 +1,4 @@
-from rtxlib import info, error, warn, direct_print, process, log_results, current_milli_time
+from rtxlib import info, error, warn, direct_print, process, log_results, current_milli_time, log_statistics_results
 
 
 def _defaultChangeProvider(variables,wf):
@@ -97,6 +97,9 @@ def experimentFunction(wf, exp):
     info("> FullState      | " + str(exp["state"]))
     info("> ResultValue    | " + str(result))
     # log the result values into a csv file
+    print(result)
     log_results(wf.folder, exp["knobs"].values() + [result])
+    # log the statistics result into a csv file
+    log_statistics_results(wf.folder, result)
     # return the result value of the evaluator
     return result

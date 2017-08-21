@@ -107,3 +107,24 @@ def log_results(experiment_folder, data, append=True):
     except csv.Error as e:
         error("Log to csv did not work: " + str(e))
         pass
+
+def log_statistics_results(experiment_folder, data, append=True):
+    """ logs the result values of an experiment to a csv file """
+    try:
+        if append:
+            with open('./' + str(experiment_folder) + '/statistics_results.csv', 'w') as csv_file:
+                writer = csv.writer(csv_file, dialect='excel')
+                writer.writerows([['interested_parameters', 'p_value']])
+                for each in data:
+                    writer.writerows([[list(each.keys()), list(each.values())]])
+
+        else:
+            with open('./' + str(experiment_folder) + '/statistics_results.csv', 'w') as csv_file:
+                writer = csv.writer(csv_file, dialect='excel')
+                writer.writerows([['interested_parameters', 'p_value']])
+                for each in data:
+                    writer.writerows([[list(each.keys()), list(each.values())]])
+
+    except csv.Error as e:
+        error("Log to csv did not work: " + str(e))
+        pass

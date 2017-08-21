@@ -5,6 +5,9 @@ from rtxlib.changeproviders import init_change_provider
 from rtxlib.dataproviders import init_data_providers
 from rtxlib.executionstrategy import run_execution_strategy
 from rtxlib.preprocessors import init_pre_processors, kill_pre_processors
+from db_manager import save_experiment, save_config
+
+
 
 
 def execute_workflow(wf):
@@ -20,6 +23,9 @@ def execute_workflow(wf):
     except KeyError as e:
         error("definition.py is missing value " + str(e))
         exit(1)
+    #initialize  database
+    save_experiment(wf,db_name="/Users/A.Gunduz/Desktop/SavedExperiments.db")
+    save_config(wf, db_name="/Users/A.Gunduz/Desktop/SavedExperiments.db")
     # initialize the test environment
     init_pre_processors(wf)
     init_change_provider(wf)
