@@ -11,6 +11,3 @@ DBA.egg-info/
 build/
 dist/
 */*.png
-examples/**/*.png
-examples/**/execution.log
-examples/**/results.csv
