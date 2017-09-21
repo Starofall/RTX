@@ -41,6 +41,12 @@ def experimentFunction(wf, exp):
                 process("IgnoreSamples  | ", i, to_ignore)
         print("")
 
+    # we store the counter of this experiment in the workflow
+    if hasattr(wf, "experimentCounter"):
+        wf.experimentCounter += 1
+    else:
+        wf.experimentCounter = 1
+
     # start collecting data
     sample_size = exp["sample_size"]
     i = 0
@@ -82,11 +88,7 @@ def experimentFunction(wf, exp):
     except:
         result = 0
         error("evaluator failed")
-    # we store the counter of this experiment in the workflow
-    if hasattr(wf, "experimentCounter"):
-        wf.experimentCounter += 1
-    else:
-        wf.experimentCounter = 1
+
     # print the results
     duration = current_milli_time() - start_time
     # do not show stats for forever strategy

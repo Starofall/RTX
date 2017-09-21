@@ -1,6 +1,8 @@
 #!/usr/bin/python
 import sys
 import imp
+from elasticsearch import Elasticsearch
+from datetime import datetime
 
 import rtxlib
 
@@ -33,10 +35,19 @@ def loadDefinition(folder):
 if __name__ == '__main__':
     if len(sys.argv) > 2 and sys.argv[1] == "start":
         wf = loadDefinition(sys.argv[2])
+
+        es = Elasticsearch()
+        res = es.index(index="rtx-analysis", doc_type=wf.type, body=wf.execution_strategy)
+
         # setting global variable log_folder for logging and clear log
         rtxlib.LOG_FOLDER = wf.folder
         rtxlib.clearOldLog()
         info("> Starting RTX experiment...")
+
+        wf.es = es
+        wf.dt = datetime
+        wf.analysis_id = res['_id']
+
         execute_workflow(wf)
         plot(wf)
         exit(0)
