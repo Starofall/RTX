@@ -1,14 +1,15 @@
 #!/usr/bin/python
 import sys
 import imp
-from elasticsearch import Elasticsearch
+import json
 from datetime import datetime
-
 import rtxlib
 
+from colorama import Fore
 from rtxlib import info, error, debug
 from rtxlib.workflow import execute_workflow
 from rtxlib.report import plot
+from rtxlib.databases import createInstance
 
 
 def loadDefinition(folder):
@@ -36,17 +37,38 @@ if __name__ == '__main__':
     if len(sys.argv) > 2 and sys.argv[1] == "start":
         wf = loadDefinition(sys.argv[2])
 
-        es = Elasticsearch()
-        res = es.index(index="rtx-analysis", doc_type=wf.type, body=wf.execution_strategy)
+        with open('config.json') as json_data_file:
+            try:
+                config_data = json.load(json_data_file)
+            except ValueError:
+                # config.json is empty - default configuration used
+                config_data = []
+
+        if "database" in config_data:
+            database_config = config_data["database"]
+            info("> RTX configuration: Using " + database_config["type"] + " database.", Fore.CYAN)
+
+            db = createInstance(database_config)
+            analysis = dict()
+            analysis["body"] = dict()
+            analysis["body"]["strategy"] = wf.execution_strategy
+            analysis["body"]["timestamp"] = datetime.now()
+            analysis["index"] = "rtx-analysis"
+            analysis["doc_type"] = wf.type
+
+            wf.analysis_id = db.save_without_id(analysis)
+            wf.db = db
+            wf.dt = datetime
+            wf.using_database = True
+
+        else:
+            info("> RTX configuration: No database specified.", Fore.CYAN)
+            wf.using_database = False
 
         # setting global variable log_folder for logging and clear log
         rtxlib.LOG_FOLDER = wf.folder
         rtxlib.clearOldLog()
         info("> Starting RTX experiment...")
-
-        wf.es = es
-        wf.dt = datetime
-        wf.analysis_id = res['_id']
 
         execute_workflow(wf)
         plot(wf)

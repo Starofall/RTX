@@ -57,13 +57,14 @@ def experimentFunction(wf, exp):
             if new_data is not None:
                 try:
                     # print(new_data)
-                    exp["state"] = wf.primary_data_provider["data_reducer"](exp["state"], new_data,wf)
+                    wf.current_knobs = exp["knobs"]
+                    exp["state"] = wf.primary_data_provider["data_reducer"](exp["state"], new_data, wf)
                 except StopIteration:
                     raise StopIteration()  # just fwd
                 except RuntimeError:
                     raise RuntimeError()  # just fwd
                 except:
-                    error("could not reducing data set: " + str(new_data))
+                    error("could not reduce data set: " + str(new_data))
                 i += 1
                 process("CollectSamples | ", i, sample_size)
             # now we use returnDataListNonBlocking on all secondary data providers
