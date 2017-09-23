@@ -1,7 +1,8 @@
 from rtxlib.databases.Database import Database
 from elasticsearch import Elasticsearch
 from elasticsearch.exceptions import ConnectionError
-from rtxlib import info, error
+from rtxlib import error
+
 
 class ElasticSearchDb(Database):
 

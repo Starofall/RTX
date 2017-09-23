@@ -6,7 +6,7 @@ def evaluator(resultState, wf):
     return wf.experimentCounter
 
 def state_initializer(state, wf):
-    state["data_points"] = 1
+    state["data_points"] = 0
     return state
 
 def primary_data_reducer(state, newData, wf):

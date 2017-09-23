@@ -9,7 +9,7 @@ from colorama import Fore
 from rtxlib import info, error, debug
 from rtxlib.workflow import execute_workflow
 from rtxlib.report import plot
-from rtxlib.databases import createInstance
+from rtxlib.databases import create_instance
 
 
 def loadDefinition(folder):
@@ -44,11 +44,12 @@ if __name__ == '__main__':
                 # config.json is empty - default configuration used
                 config_data = []
 
+        # check for database configuration
         if "database" in config_data:
             database_config = config_data["database"]
             info("> RTX configuration: Using " + database_config["type"] + " database.", Fore.CYAN)
 
-            db = createInstance(database_config)
+            db = create_instance(database_config)
             analysis = dict()
             analysis["body"] = dict()
             analysis["body"]["strategy"] = wf.execution_strategy
