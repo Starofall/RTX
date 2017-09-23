@@ -2,7 +2,6 @@
 import sys
 import imp
 import json
-from datetime import datetime
 import rtxlib
 
 from colorama import Fore
@@ -10,6 +9,7 @@ from rtxlib import info, error, debug
 from rtxlib.workflow import execute_workflow
 from rtxlib.report import plot
 from rtxlib.databases import create_instance
+from rtxlib.databases import get_no_database
 
 
 def loadDefinition(folder):
@@ -48,23 +48,13 @@ if __name__ == '__main__':
         if "database" in config_data:
             database_config = config_data["database"]
             info("> RTX configuration: Using " + database_config["type"] + " database.", Fore.CYAN)
-
             db = create_instance(database_config)
-            analysis = dict()
-            analysis["body"] = dict()
-            analysis["body"]["strategy"] = wf.execution_strategy
-            analysis["body"]["timestamp"] = datetime.now()
-            analysis["index"] = "rtx-analysis"
-            analysis["doc_type"] = wf.type
-
-            wf.analysis_id = db.save_without_id(analysis)
+            wf.analysis_id = db.save_analysis(wf.analysis, wf.execution_strategy)
             wf.db = db
-            wf.dt = datetime
-            wf.using_database = True
-
         else:
             info("> RTX configuration: No database specified.", Fore.CYAN)
-            wf.using_database = False
+            wf.analysis_id = "-1"
+            wf.db = get_no_database()
 
         # setting global variable log_folder for logging and clear log
         rtxlib.LOG_FOLDER = wf.folder
