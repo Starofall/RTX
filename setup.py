@@ -16,6 +16,7 @@ setup(
         'pandas',  # plotting lib
         'seaborn',  # plotting lib
         'paho-mqtt',  # mqtt integration
-        'requests'  # http integreation
+        'requests',  # http integreation
+        'elasticsearch' # elasticsearch integration
     ]
 )

@@ -79,3 +79,19 @@ RTX has the following abstractions that can be implemented for any given service
         }
     }
     ```
+
+ ### Supported databases
+ 
+ * elasticsearch - Saves all experiment data, including configurations, workflow runs and raw data. 
+  
+    To use elasticsearch, you need to:
+  
+    * Download the latest version from https://www.elastic.co/downloads/elasticsearch.
+    
+        To run inside a Docker container, we recommend this image that also includes Kibana for data visualization:
+    https://hub.docker.com/r/nshou/elasticsearch-kibana/.
+    (If on Docker for Mac make sure to increase the Docker VM memory or the container won't run.)
+  
+    * Rename the "config.json.template" file to "config.json" and make any necessary changes in the configuration to match your settings. 
+    In the default configuration, elasticsearch listens to localhost:9200.
+ 
