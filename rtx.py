@@ -3,6 +3,7 @@ import sys
 import imp
 import json
 import rtxlib
+import scipy.stats as stats
 
 from colorama import Fore
 from rtxlib import info, error, debug
@@ -55,6 +56,14 @@ if __name__ == '__main__':
             info("> RTX configuration: No database specified.", Fore.CYAN)
             wf.analysis_id = "-1"
             wf.db = get_no_database()
+
+        # passing the stats obj to the workflow
+        wf.stats = stats
+
+        if wf.analysis == "t-test":
+            if not hasattr(wf, "alpha"):
+                error("You should specify an alpha.")
+                exit(0)
 
         # setting global variable log_folder for logging and clear log
         rtxlib.LOG_FOLDER = wf.folder

@@ -39,9 +39,9 @@ class ElasticSearchDb(Database):
             body["mappings"] = mappings
 
         try:
-            indices_client = IndicesClient(self.es)
-            if not indices_client.exists(self.index):
-                indices_client.create(self.index, body)
+            self.indices_client = IndicesClient(self.es)
+            if not self.indices_client.exists(self.index):
+                self.indices_client.create(self.index, body)
         except TransportError:
             error("Error while creating elasticsearch index. Check type mappings in config.json.")
             print(traceback.format_exc())
@@ -72,3 +72,18 @@ class ElasticSearchDb(Database):
         except ConnectionError:
             error("Error while updating elasticsearch index. Check connection to elasticsearch.")
 
+    def get_data_points(self, analysis_id, exp_run):
+        query = {
+            "query": {
+                "parent_id" : {
+                    "type": "data_point",
+                    "id" : str(analysis_id)
+                }
+            },
+            "post_filter": {
+                "term": { "exp_run": int(exp_run) }
+            }
+        }
+        self.indices_client.refresh()
+        res = self.es.search(self.index, self.data_point_type_name, query)
+        return [data["_source"]["payload"] for data in res["hits"]["hits"]]

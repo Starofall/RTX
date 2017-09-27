@@ -17,6 +17,7 @@ setup(
         'seaborn',  # plotting lib
         'paho-mqtt',  # mqtt integration
         'requests',  # http integreation
-        'elasticsearch' # elasticsearch integration
+        'elasticsearch', # elasticsearch integration
+        'scipy' # statistics and statistical testing
     ]
 )

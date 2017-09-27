@@ -15,3 +15,7 @@ class Database:
     def save_data_point(self, exp_run, knobs, payload, data_point_id, analysis_id):
         """ called for saving experiment configuration runs and raw data """
         pass
+
+    def get_data_points(self, analysis_id, exp_run):
+        """ called for getting all the data points corresponding to an analytis run """
+        pass

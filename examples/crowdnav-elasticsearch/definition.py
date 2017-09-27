@@ -1,9 +1,26 @@
 # Simple sequential run of knob values
 name = "CrowdNav-Sequential"
 analysis = "t-test"
+alpha = 0.05
 
 def evaluator(resultState, wf):
-    return wf.experimentCounter
+    return 0
+
+def workflow_evaluator(wf):
+
+    data1 = wf.db.get_data_points(wf.analysis_id, 0)
+    data2 = wf.db.get_data_points(wf.analysis_id, 1)
+
+    x1 = [d["overhead"] for d in data1]
+    x2 = [d["overhead"] for d in data2]
+
+    res = wf.stats.ttest_ind(x1, x2, equal_var = False)
+
+    print "t statistic: " + str(res[0])
+    print "p-value: " + str(res[1])
+
+    # True means they are different
+    return res[1] <= wf.alpha
 
 def state_initializer(state, wf):
     state["data_points"] = 0
@@ -16,8 +33,8 @@ def primary_data_reducer(state, newData, wf):
 
 
 execution_strategy = {
-    "ignore_first_n_results": 10,
-    "sample_size": 10,
+    "ignore_first_n_results": 2,
+    "sample_size": 2,
     "type": "sequential",
     "knobs": [
         {"route_random_sigma": 0.0},
