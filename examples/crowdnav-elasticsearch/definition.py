@@ -16,8 +16,10 @@ def workflow_evaluator(wf):
 
     res = wf.stats.ttest_ind(x1, x2, equal_var = False)
 
-    print "t statistic: " + str(res[0])
-    print "p-value: " + str(res[1])
+    result = {"tstat": str(res[0]), "pvalue": str(res[1])}
+    print result
+
+    wf.db.save_analysis_result(wf.analysis_id, result)
 
     # True means they are different
     return res[1] <= wf.alpha

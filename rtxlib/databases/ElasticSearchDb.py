@@ -43,7 +43,7 @@ class ElasticSearchDb(Database):
             if not self.indices_client.exists(self.index):
                 self.indices_client.create(self.index, body)
         except TransportError:
-            error("Error while creating elasticsearch index. Check type mappings in config.json.")
+            error("Error while creating elasticsearch. Check type mappings in config.json.")
             print(traceback.format_exc())
             exit(0)
 
@@ -56,8 +56,7 @@ class ElasticSearchDb(Database):
             res = self.es.index(self.index, self.analysis_type_name, body)
             return res['_id']
         except ConnectionError:
-            error("Error while saving analysis data in elasticsearch index. "
-                  "Check connection to elasticsearch and restart.")
+            error("Error while saving analysis data in elasticsearch. Check connection to elasticsearch and restart.")
             exit(0)
 
     def save_data_point(self, exp_run, knobs, payload, data_point_count, analysis_id):
@@ -70,7 +69,7 @@ class ElasticSearchDb(Database):
         try:
             self.es.index(self.index, self.data_point_type_name, body, data_point_id, parent=analysis_id)
         except ConnectionError:
-            error("Error while updating elasticsearch index. Check connection to elasticsearch.")
+            error("Error while saving data point data in elasticsearch. Check connection to elasticsearch.")
 
     def get_data_points(self, analysis_id, exp_run):
         query = {
@@ -87,3 +86,11 @@ class ElasticSearchDb(Database):
         self.indices_client.refresh()
         res = self.es.search(self.index, self.data_point_type_name, query)
         return [data["_source"]["payload"] for data in res["hits"]["hits"]]
+
+    def save_analysis_result(self, analysis_id, result):
+        result_dict = {"result": result}
+        body = {"doc": result_dict}
+        try:
+            self.es.update(self.index, self.analysis_type_name, analysis_id, body)
+        except ConnectionError:
+            error("Error while updating analysis data in elasticsearch. Check connection to elasticsearch.")

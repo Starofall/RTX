@@ -19,3 +19,7 @@ class Database:
     def get_data_points(self, analysis_id, exp_run):
         """ called for getting all the data points corresponding to an analytis run """
         pass
+
+    def save_analysis_result(self, analysis_id, result):
+        """ saves the result of an analysis """
+        pass
