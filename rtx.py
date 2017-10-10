@@ -4,6 +4,9 @@ import imp
 import json
 import rtxlib
 import scipy.stats as stats
+import statsmodels.stats.power as statpower
+import numpy as np
+import math as math
 
 from colorama import Fore
 from rtxlib import info, error, debug
@@ -59,6 +62,9 @@ if __name__ == '__main__':
 
         # passing the stats obj to the workflow
         wf.stats = stats
+        wf.statpower = statpower
+        wf.np = np
+        wf.math = math
 
         if wf.analysis == "t-test":
             if not hasattr(wf, "alpha"):

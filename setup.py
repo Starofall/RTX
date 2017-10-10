@@ -18,6 +18,8 @@ setup(
         'paho-mqtt',  # mqtt integration
         'requests',  # http integreation
         'elasticsearch', # elasticsearch integration
-        'scipy' # statistics and statistical testing
+        'numpy', # scientific computing
+        'scipy', # numerics and statistics
+        'statsmodels' # statistics and statistical testing
     ]
 )
