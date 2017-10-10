@@ -1,3 +1,5 @@
+import traceback
+
 from rtxlib.databases.Database import Database
 from elasticsearch import Elasticsearch
 from elasticsearch.client import IndicesClient
@@ -5,7 +7,6 @@ from elasticsearch.exceptions import TransportError
 from elasticsearch.exceptions import ConnectionError
 from datetime import datetime
 from rtxlib import error
-import traceback
 
 
 class ElasticSearchDb(Database):

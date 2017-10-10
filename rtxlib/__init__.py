@@ -94,16 +94,17 @@ def direct_print(str):
 
 def log_results(experiment_folder, data, append=True):
     """ logs the result values of an experiment to a csv file """
-    try:
-        if append:
-            with open('./' + str(experiment_folder) + '/results.csv', 'ab') as csv_file:
-                writer = csv.writer(csv_file, dialect='excel')
-                writer.writerow(data)
-        else:
-            with open('./' + str(experiment_folder) + '/results.csv', 'wb') as csv_file:
-                writer = csv.writer(csv_file, dialect='excel')
-                writer.writerow(data)
+    if LOG_FOLDER:
+        try:
+            if append:
+                with open('./' + str(experiment_folder) + '/results.csv', 'ab') as csv_file:
+                    writer = csv.writer(csv_file, dialect='excel')
+                    writer.writerow(data)
+            else:
+                with open('./' + str(experiment_folder) + '/results.csv', 'wb') as csv_file:
+                    writer = csv.writer(csv_file, dialect='excel')
+                    writer.writerow(data)
 
-    except csv.Error as e:
-        error("Log to csv did not work: " + str(e))
-        pass
+        except csv.Error as e:
+            error("Log to csv did not work: " + str(e))
+            pass

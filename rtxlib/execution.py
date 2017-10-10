@@ -98,9 +98,9 @@ def experimentFunction(wf, exp):
     duration = current_milli_time() - start_time
     # do not show stats for forever strategy
     if wf.totalExperiments > 0:
-        info("> Statistics     | " + str(wf.experimentCounter) + "/" + str(wf.totalExperiments)
+        info("> Statistics     | " + str(wf.experimentCounter+1) + "/" + str(wf.totalExperiments)
              + " took " + str(duration) + "ms" + " - remaining ~" + str(
-            (wf.totalExperiments - wf.experimentCounter) * duration / 1000) + "sec")
+            (wf.totalExperiments - wf.experimentCounter+1) * duration / 1000) + "sec")
     info("> FullState      | " + str(exp["state"]))
     info("> ResultValue    | " + str(result))
     # log the result values into a csv file

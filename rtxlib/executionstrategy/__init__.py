@@ -34,9 +34,6 @@ def run_execution_strategy(wf):
     except RuntimeError:
         error("Stopped the whole workflow as requested by a RuntimeError")
     # finished
-    res = wf.workflow_evaluator(wf)
-    info(">")
-    info("> Workflow result: " + str(res))
     info(">")
     applyDefaultKnobs(wf)
 
