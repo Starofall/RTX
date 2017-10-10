@@ -3,10 +3,6 @@ import sys
 import imp
 import json
 import rtxlib
-import scipy.stats as stats
-import statsmodels.stats.power as statpower
-import numpy as np
-import math as math
 
 from colorama import Fore
 from rtxlib import info, error, debug
@@ -41,7 +37,7 @@ if __name__ == '__main__':
     if len(sys.argv) > 2 and sys.argv[1] == "start":
         wf = loadDefinition(sys.argv[2])
 
-        with open('config.json') as json_data_file:
+        with open('rtx_config.json') as json_data_file:
             try:
                 config_data = json.load(json_data_file)
             except ValueError:
@@ -59,17 +55,6 @@ if __name__ == '__main__':
             info("> RTX configuration: No database specified.", Fore.CYAN)
             wf.analysis_id = "-1"
             wf.db = get_no_database()
-
-        # passing the stats obj to the workflow
-        wf.stats = stats
-        wf.statpower = statpower
-        wf.np = np
-        wf.math = math
-
-        if wf.analysis == "t-test":
-            if not hasattr(wf, "alpha"):
-                error("You should specify an alpha.")
-                exit(0)
 
         # setting global variable log_folder for logging and clear log
         rtxlib.LOG_FOLDER = wf.folder
