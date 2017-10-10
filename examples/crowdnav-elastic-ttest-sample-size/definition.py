@@ -4,8 +4,10 @@ alpha = 0.05
 power = 0.8
 mean_diff = 0.1
 
+
 def evaluator(resultState, wf):
     return 0
+
 
 def workflow_evaluator(wf):
 
