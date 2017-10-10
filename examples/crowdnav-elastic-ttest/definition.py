@@ -1,4 +1,3 @@
-# Simple sequential run of knob values
 name = "CrowdNav-Sequential"
 analysis = "t-test"
 alpha = 0.05
