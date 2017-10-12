@@ -6,7 +6,7 @@ from rtxlib import error
 class AndersonDarling(Analysis):
     """Derived from Kolmogorov test.
 
-    Tests the null hypothesis is that the sample comes from a normal distribution.
+    Tests the null hypothesis that the sample comes from a normal distribution.
     """
 
     name = "anderson-darling"

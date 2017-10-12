@@ -5,9 +5,10 @@ from scipy.stats import shapiro
 class ShapiroWilk(Analysis):
     """This normality test is reputedly more well suited to smaller datasets.
 
-    Tests the null hypothesis is that the sample comes from a normal distribution.
+    Tests the null hypothesis that the sample comes from a normal distribution.
     This test is biased by sample size: the test may be statistically significant from a normal distribution
     in any large samples. Thus a Q-Q plot is required for verification in addition to the test.
+    Also, the Shapiro-Wilk test is known not to work well in samples with many identical values.
     """
 
     name = "shapiro-wilk"
