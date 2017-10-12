@@ -5,7 +5,7 @@ from scipy.stats import normaltest
 class DAgostinoPearson(Analysis):
     """Combines skew and kurtosis to produce an omnibus test of normality.
 
-    The null hypothesis is that the sample comes from a normal distribution.
+    Tests the null hypothesis is that the sample comes from a normal distribution.
     """
 
     name = "dagostino-pearson"
