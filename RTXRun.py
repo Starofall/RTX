@@ -2,6 +2,7 @@ from analysis_lib import db
 from types import ModuleType
 from rtxlib.workflow import execute_workflow
 
+
 class RTXRun(object):
 
     def __init__(self):
