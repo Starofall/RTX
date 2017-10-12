@@ -1,10 +1,10 @@
 from analysis_lib.Analysis import Analysis
-import scipy.stats as stats
+from scipy.stats import normaltest
 
 
-class Ttest(Analysis):
+class DAgostinoPearson(Analysis):
 
-    name = "t-test"
+    name = "dagostino-pearson"
 
     def __init__(self, rtx_run_ids, alpha=0.05):
         super(self.__class__, self).__init__(rtx_run_ids)
@@ -15,19 +15,14 @@ class Ttest(Analysis):
         x1 = [d["overhead"] for d in data[0]]
         x2 = [d["overhead"] for d in data[1]]
 
-        tstat, pvalue = stats.ttest_ind(x1, x2, equal_var = False)
+        statistic, pvalue = normaltest(x1 + x2)
 
-        different_distributions = bool(pvalue <= self.alpha)
+        not_normal = bool(pvalue <= self.alpha)
 
         result = dict()
-        result["tstat"] = tstat
+        result["statistic"] = statistic
         result["pvalue"] = pvalue
         result["alpha"] = self.alpha
-        result["different_distributions"] = different_distributions
+        result["not_normal"] = not_normal
 
         return result
-
-
-
-
-
