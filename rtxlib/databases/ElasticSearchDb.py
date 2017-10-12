@@ -106,8 +106,8 @@ class ElasticSearchDb(Database):
         return [data["_source"]["payload"] for data in res["hits"]["hits"]]
 
     def save_analysis(self, rtx_run_ids, name, result):
-        ids_str = reduce(lambda a,b: a+"_"+b, rtx_run_ids[1:], rtx_run_ids[0])
-        analysis_id = ids_str + "-" + name
+        ids_str = reduce(lambda a,b: a+"+"+b, rtx_run_ids[1:], rtx_run_ids[0])
+        analysis_id = ids_str + "_" + name
         body = dict()
         body["rtx_run_ids"] = rtx_run_ids
         body["name"] = name

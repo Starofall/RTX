@@ -8,7 +8,7 @@ class TtestSampleSizeEstimation(Analysis):
 
     name = "t-test-sample-estimation"
 
-    def __init__(self, rtx_run_ids, alpha=0.05, power=0.8, mean_diff=0.1):
+    def __init__(self, rtx_run_ids, mean_diff, alpha=0.05, power=0.8):
         super(self.__class__, self).__init__(rtx_run_ids)
         self.alpha = alpha
         self.power = power
