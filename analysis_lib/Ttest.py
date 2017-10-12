@@ -1,18 +1,16 @@
+from analysis_lib.Analysis import Analysis
 import scipy.stats as stats
 
-from analysis_lib.Analysis import Analysis
 
+class Ttest(Analysis):
 
-class TtestAnalysis(Analysis):
-    """ implements a ttest analysis """
+    name = "t-test"
 
-    def __init__(self, alpha):
-        super(self.__class__, self).__init__()
-
-        self.analysis = "t-test"
+    def __init__(self, rtx_run_ids, alpha=0.05):
+        super(self.__class__, self).__init__(rtx_run_ids)
         self.alpha = alpha
 
-    def workflow_evaluator(self, wf, data):
+    def run(self, data):
 
         x1 = [d["overhead"] for d in data[0]]
         x2 = [d["overhead"] for d in data[1]]
@@ -27,7 +25,7 @@ class TtestAnalysis(Analysis):
         result["alpha"] = self.alpha
         result["different_distributions"] = different_distributions
 
-        super(self.__class__, self).workflow_evaluator(wf, result)
+        return result
 
 
 

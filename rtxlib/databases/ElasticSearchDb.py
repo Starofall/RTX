@@ -20,17 +20,20 @@ class ElasticSearchDb(Database):
 
         index = db_config["index"]
         self.index = index["name"]
+        rtx_run_type = db_config["rtx_run_type"]
+        self.rtx_run_type_name = rtx_run_type["name"]
         analysis_type = db_config["analysis_type"]
         self.analysis_type_name = analysis_type["name"]
         data_point_type = db_config["data_point_type"]
         self.data_point_type_name = data_point_type["name"]
 
         mappings = dict()
+        # user can specify an type without a mapping (dynamic mapping)
+        if "mapping" in rtx_run_type:
+            mappings[self.rtx_run_type_name] = rtx_run_type["mapping"]
         if "mapping" in analysis_type:
-            # user can specify an type without a mapping (dynamic mapping)
             mappings[self.analysis_type_name] = analysis_type["mapping"]
         if "mapping" in data_point_type:
-            # user can specify an type without a mapping (dynamic mapping)
             mappings[self.data_point_type_name] = data_point_type["mapping"]
 
         body = dict()
@@ -48,36 +51,50 @@ class ElasticSearchDb(Database):
             print(traceback.format_exc())
             exit(0)
 
-    def save_analysis(self, name, strategy):
+    def save_rtx_run(self, strategy):
         body = dict()
-        body["name"] = name
         body["strategy"] = strategy
         body["created"] = datetime.now()
         try:
-            res = self.es.index(self.index, self.analysis_type_name, body)
+            res = self.es.index(self.index, self.rtx_run_type_name, body)
             return res['_id']
         except ConnectionError:
-            error("Error while saving analysis data in elasticsearch. Check connection to elasticsearch and restart.")
+            error("Error while saving rtx_run data in elasticsearch. Check connection to elasticsearch and restart.")
             exit(0)
 
-    def save_data_point(self, exp_run, knobs, payload, data_point_count, analysis_id):
-        data_point_id = analysis_id + "#" + str(exp_run) + "_" + str(data_point_count)
+    def update_rtx_run_with_exp_count(self, rtx_run_id, exp_count):
+        body = {"doc": {"exp_count": exp_count}}
+        try:
+            self.es.update(self.index, self.rtx_run_type_name, rtx_run_id, body)
+        except ConnectionError:
+            error("Error while updating rtx_run data in elasticsearch. Check connection to elasticsearch.")
+
+    def get_exp_count(self, rtx_run_id):
+        res = self.es.get(self.index, rtx_run_id, self.rtx_run_type_name, _source=["exp_count"])
+        if "exp_count" in res["_source"]:
+            return res["_source"]["exp_count"]
+        else:
+            error("Cannot retrieve experiment count for rtx run with id " + rtx_run_id)
+            return 0
+
+    def save_data_point(self, exp_run, knobs, payload, data_point_count, rtx_run_id):
+        data_point_id = rtx_run_id + "#" + str(exp_run) + "_" + str(data_point_count)
         body = dict()
         body["exp_run"] = exp_run
         body["knobs"] = knobs
         body["payload"] = payload
         body["created"] = datetime.now()
         try:
-            self.es.index(self.index, self.data_point_type_name, body, data_point_id, parent=analysis_id)
+            self.es.index(self.index, self.data_point_type_name, body, data_point_id, parent=rtx_run_id)
         except ConnectionError:
             error("Error while saving data point data in elasticsearch. Check connection to elasticsearch.")
 
-    def get_data_points(self, analysis_id, exp_run):
+    def get_data_points(self, rtx_run_id, exp_run):
         query = {
             "query": {
                 "parent_id" : {
                     "type": "data_point",
-                    "id" : str(analysis_id)
+                    "id" : str(rtx_run_id)
                 }
             },
             "post_filter": {
@@ -88,10 +105,15 @@ class ElasticSearchDb(Database):
         res = self.es.search(self.index, self.data_point_type_name, query)
         return [data["_source"]["payload"] for data in res["hits"]["hits"]]
 
-    def save_analysis_result(self, analysis_id, result):
-        result_dict = {"result": result}
-        body = {"doc": result_dict}
+    def save_analysis(self, rtx_run_ids, name, result):
+        ids_str = reduce(lambda a,b: a+"_"+b, rtx_run_ids[1:], rtx_run_ids[0])
+        analysis_id = ids_str + "-" + name
+        body = dict()
+        body["rtx_run_ids"] = rtx_run_ids
+        body["name"] = name
+        body["result"] = result
+        body["created"] = datetime.now()
         try:
-            self.es.update(self.index, self.analysis_type_name, analysis_id, body)
+            self.es.index(self.index, self.analysis_type_name, body, analysis_id)
         except ConnectionError:
-            error("Error while updating analysis data in elasticsearch. Check connection to elasticsearch.")
+            error("Error while saving analysis data in elasticsearch. Check connection to elasticsearch.")

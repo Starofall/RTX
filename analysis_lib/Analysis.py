@@ -1,68 +1,43 @@
 from analysis_lib import db
-from types import ModuleType
-from rtxlib.workflow import execute_workflow
+from RTXRun import get_data_for_run
+from rtxlib import error, info
+from colorama import Fore
+from abc import ABCMeta, abstractmethod
+
 
 class Analysis(object):
-    """ abstract interface for an analysis.
 
-    An analysis creates a workflow module and invokes RTX with it
-    """
+    __metaclass__ = ABCMeta
 
-    def __init__(self):
-        self.wf = ModuleType('workflow')
-        self.wf.primary_data_provider = self.primary_data_provider
-        self.wf.change_provider = self.change_provider
-        self.wf.execution_strategy = self.execution_strategy
-        self.wf.state_initializer = self.state_initializer
-        self.wf.evaluator = self.evaluator
-        self.wf.workflow_evaluator = self.workflow_evaluator
-        self.wf.folder = None
+    def __init__(self, rtx_run_ids):
+        self.rtx_run_ids = rtx_run_ids
 
-    def run(self):
-        self.wf.name = self.wf.analysis_id = db().save_analysis(self.analysis, self.wf.execution_strategy)
-        execute_workflow(self.wf)
-        data = []
-        for i in range(0,self.wf.totalExperiments):
-            data.append(db().get_data_points(self.wf.analysis_id, i))
-        self.workflow_evaluator(self.wf, data)
+    def start(self):
+        data = self.get_data()
+        result = self.run(data)
+        self.save_result(self.name, result)
 
-    def workflow_evaluator(self, wf, result):
-        db().save_analysis_result(wf.analysis_id, result)
-        print result
+    def get_data(self):
+        first_rtx_run_id = self.rtx_run_ids[0]
+        data, exp_count = get_data_for_run(first_rtx_run_id)
 
-    def primary_data_reducer(state, newData, wf):
-        db().save_data_point(wf.experimentCounter, wf.current_knobs, newData, state["data_points"], wf.analysis_id)
-        state["data_points"] += 1
-        return state
+        for rtx_run_id in self.rtx_run_ids[1:]:
+            new_data, new_exp_count = get_data_for_run(rtx_run_id)
+            for i in range(0,exp_count):
+                data[i] += new_data[i]
 
-    def state_initializer(self, state, wf):
-        state["data_points"] = 0
-        return state
+        if not data:
+            error("Tried to run analysis on empty data. Aborting.")
+            return
 
-    def evaluator(self, resultState, wf):
-        return 0
+        return data
 
-    primary_data_provider = {
-        "type": "kafka_consumer",
-        "kafka_uri": "kafka:9092",
-        "topic": "crowd-nav-trips",
-        "serializer": "JSON",
-        "data_reducer": primary_data_reducer
-    }
+    @abstractmethod
+    def run(self, data):
+        """ analysis-specific logic """
+        pass
 
-    change_provider = {
-        "type": "kafka_producer",
-        "kafka_uri": "kafka:9092",
-        "topic": "crowd-nav-commands",
-        "serializer": "JSON",
-    }
-
-    execution_strategy = {
-        "ignore_first_n_results": 0,
-        "sample_size": 2,
-        "type": "sequential",
-        "knobs": [
-            {"route_random_sigma": 0.0},
-            {"route_random_sigma": 0.2}
-        ]
-    }
+    def save_result(self, analysis_name, result):
+        db().save_analysis(self.rtx_run_ids, analysis_name, result)
+        info("> " + self.name + " analysis performed on datasets [" + ", ".join(str(x) for x in self.rtx_run_ids) + "]", Fore.CYAN)
+        info("> Result: " + str(result), Fore.CYAN)

@@ -10,11 +10,10 @@
         "number_of_replicas" : 1
       }
     },
-    "analysis_type": {
-      "name": "analysis",
+    "rtx_run_type": {
+      "name": "rtx_run",
       "mapping": {
         "properties": {
-          "name":     { "type": "keyword" },
           "strategy": {
             "type": "nested",
             "properties": {
@@ -25,6 +24,17 @@
             }
           },
           "created":  { "type": "date"  }
+        }
+      }
+    },
+    "analysis_type": {
+      "name": "analysis",
+      "mapping": {
+        "properties": {
+          "rtx_run_ids":   { "type": "keyword" },
+          "name":          { "type": "keyword"  },
+          "result":        { "type": "object"  },
+          "created":       { "type": "date"    }
         }
       }
     },
