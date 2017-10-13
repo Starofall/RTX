@@ -11,14 +11,14 @@ from rtxlib.rtx_run import RTXRun
 if __name__ == '__main__':
 
     setup_database()
-    rtx_run_ids = []
+    rtx_run_ids = list()
     rtx_run_ids.append(RTXRun().start())
     rtx_run_ids.append(RTXRun().start())
 
-    ttest_analysis = Ttest(rtx_run_ids, alpha=0.05).start()
-    ttest_analysis = TtestSampleSizeEstimation(rtx_run_ids, mean_diff=0.1, alpha=0.05, power=0.8).start()
-    ttest_analysis = DAgostinoPearson(rtx_run_ids, alpha=0.05).start()
-    ttest_analysis = ShapiroWilk(rtx_run_ids, alpha=0.05).start()
-    ttest_analysis = AndersonDarling(rtx_run_ids, alpha=0.05).start()
-    ttest_analysis = KolmogorovSmirnov(rtx_run_ids, alpha=0.05).start()
+    Ttest(rtx_run_ids, alpha=0.05).start()
+    TtestSampleSizeEstimation(rtx_run_ids, mean_diff=0.1, alpha=0.05, power=0.8).start()
+    DAgostinoPearson(rtx_run_ids, alpha=0.05).start()
+    ShapiroWilk(rtx_run_ids, alpha=0.05).start()
+    AndersonDarling(rtx_run_ids, alpha=0.05).start()
+    KolmogorovSmirnov(rtx_run_ids, alpha=0.05).start()
 
