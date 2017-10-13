@@ -28,6 +28,7 @@ def start_step_strategy(wf):
             value += step
         parameters_values += [parameter_values]
     list_of_configurations = reduce(lambda list1, list2: [x + y for x in list1 for y in list2], parameters_values)
+    wf.list_of_configurations = list_of_configurations
     # we run the list of experiments
     wf.totalExperiments = len(list_of_configurations)
     info("> Steps Created  | Count: " + str(wf.totalExperiments), Fore.CYAN)

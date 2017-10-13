@@ -26,5 +26,5 @@ if __name__ == '__main__':
     # KolmogorovSmirnov(rtx_run_ids, alpha=0.05).start()
     # OneWayAnova(rtx_run_ids).start()
     # KruskalWallis(rtx_run_ids).start()
-    # TwoWayAnova(rtx_run_ids).start()
+    TwoWayAnova(rtx_run_ids).start()
 

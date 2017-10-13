@@ -4,7 +4,12 @@ from scipy.stats import f_oneway
 from scipy.stats import kruskal
 from statsmodels.formula.api import ols
 import pandas as pd
-
+from rtxlib.rtx_run import get_data_for_run
+from rtxlib.rtx_run import get_list_of_configurations_for_run
+from rtxlib.rtx_run import get_sample_size_for_run
+from rtxlib import error
+from statsmodels.stats.anova import anova_lm
+import json
 
 class DifferentDistributionsTest(Analysis):
 
@@ -69,46 +74,62 @@ class KruskalWallis(DifferentDistributionsTest):
         return kruskal(*args)
 
 
-# class TwoWayAnova(Analysis):
-#
-#     name = "one-way-anova"
-#
-#     def run(self, data):
-#
-#         x1 = [d["overhead"] for d in data[0]]
-#
-#         print data[0]
-#
-#         x1_labels = ["0.0" for d in x1]
-#         print x1_labels
-#
-#         x2 = [d["overhead"] for d in data[1]]
-#         x2_labels = ["0.2" for d in x2]
-#         x3 = [d["overhead"] for d in data[2]]
-#         x3_labels = ["0.4" for d in x3]
-#
-#         print "x1: [" + ", ".join(str(x) for x in x1) + "]"
-#         print "x2: [" + ", ".join(str(x) for x in x2) + "]"
-#         print "x3: [" + ", ".join(str(x) for x in x3) + "]"
-#
-#
-#         data = dict()
-#         data["overhead"] = x1 + x2 + x3
-#         data["route_random_sigma"] = x1_labels + x2_labels + x3_labels
-#
-#
-#         df = pd.DataFrame(data)
-#         print df
-#
-#         data_lm = ols("overhead ~ route_random_sigma", data=data).fit()
-#
-#         print data_lm
-#
-#         anova_result = anova_lm(data_lm)
-#
-#         print anova_result
-#
-#         exit(0)
+class TwoWayAnova(Analysis):
+    """ For explanation of the different types of ANOVA check:
+    https://mcfromnz.wordpress.com/2011/03/02/anova-type-iiiiii-ss-explained/
+    """
+
+    name = "two-way-anova"
+
+    def get_data(self):
+        first_rtx_run_id = self.rtx_run_ids[0]
+        data, exp_count = get_data_for_run(first_rtx_run_id)
+        self.exp_count = exp_count
+        self.list_of_configurations = get_list_of_configurations_for_run(first_rtx_run_id)
+        self.sample_size = get_sample_size_for_run(first_rtx_run_id)
+
+        for rtx_run_id in self.rtx_run_ids[1:]:
+            new_data, new_exp_count, new_list_of_cofigurations = get_data_for_run(rtx_run_id)
+            for i in range(0,exp_count):
+                data[i] += new_data[i]
+
+        if not data:
+            error("Tried to run analysis on empty data. Aborting.")
+            return
+
+        return data
+
+    def run(self, data):
+
+        x1 = [config[0] for config in self.list_of_configurations for _ in xrange(self.sample_size)]
+        x2 = [config[1] for config in self.list_of_configurations for _ in xrange(self.sample_size)]
+        y = [d["overhead"] for i in range(0, self.exp_count) for d in data[i]]
+
+        data = dict()
+        data["overhead"] = y
+        data["route_random_sigma"] = x1
+        data["max_speed_and_length_factor"] = x2
+
+        df = pd.DataFrame(data)
+        print df
+        print "------------------"
+
+        formula = 'overhead ~ C(route_random_sigma) + C(max_speed_and_length_factor) ' \
+                  '+ C(route_random_sigma):C(max_speed_and_length_factor)'
+        data_lm = ols(formula, data=data).fit()
+        print data_lm.summary()
+        print "------------------"
+
+        aov_table = anova_lm(data_lm, typ=2)
+        self.eta_squared(aov_table)
+        self.omega_squared(aov_table)
+        print(aov_table)
+        print "------------------"
+
+        return json.loads(json.dumps(aov_table, default=lambda df: json.loads(df.to_json())))
+
+        # TODO: store only selected values from the anova table.
+        #
         # different_averages = bool(pvalue <= self.alpha)
         #
         # result = dict()
@@ -118,3 +139,14 @@ class KruskalWallis(DifferentDistributionsTest):
         # result["different_averages"] = different_averages
         #
         # return result
+
+    def eta_squared(self, aov):
+        aov['eta_sq'] = 'NaN'
+        aov['eta_sq'] = aov[:-1]['sum_sq']/sum(aov['sum_sq'])
+
+    def omega_squared(self, aov):
+        mse = aov['sum_sq'][-1]/aov['df'][-1]
+        aov['omega_sq'] = 'NaN'
+        aov['omega_sq'] = (aov[:-1]['sum_sq']-(aov[:-1]['df']*mse))/(sum(aov['sum_sq'])+mse)
+
+

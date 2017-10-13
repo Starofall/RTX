@@ -20,7 +20,10 @@ class RTXRun(object):
     def start(self):
         self.wf.name = self.wf.rtx_run_id = db().save_rtx_run(self.wf.execution_strategy)
         execute_workflow(self.wf)
-        db().update_rtx_run_with_exp_count(self.wf.rtx_run_id, self.wf.totalExperiments)
+        if hasattr(self.wf, "list_of_configurations"):
+            db().update_rtx_run(self.wf.rtx_run_id, self.wf.totalExperiments, self.wf.list_of_configurations)
+        else:
+            db().update_rtx_run(self.wf.rtx_run_id, self.wf.totalExperiments)
         return self.wf.rtx_run_id
 
     def primary_data_reducer(state, newData, wf):
@@ -50,14 +53,35 @@ class RTXRun(object):
         "serializer": "JSON",
     }
 
+    # execution_strategy = {
+    #     "ignore_first_n_results": 0,
+    #     "sample_size": 4,
+    #     "type": "sequential",
+    #     "knobs": [
+    #         {"route_random_sigma": 0.0},
+    #         {"route_random_sigma": 0.2}
+    #     ]
+    # }
+
+    # execution_strategy = {
+    #     "ignore_first_n_results": 0,
+    #     "sample_size": 4,
+    #     "type": "sequential",
+    #     "knobs": [
+    #         {"route_random_sigma": 0.0},
+    #         {"route_random_sigma": 0.2},
+    #         {"route_random_sigma": 0.4}
+    #     ]
+    # }
+
     execution_strategy = {
         "ignore_first_n_results": 0,
-        "sample_size": 2,
-        "type": "sequential",
-        "knobs": [
-            {"route_random_sigma": 0.0},
-            {"route_random_sigma": 0.2}
-        ]
+        "sample_size": 4,
+        "type": "step_explorer",
+        "knobs": {
+            "route_random_sigma": ([0.0, 0.2], 0.1),
+            "max_speed_and_length_factor": ([0.0, 0.4], 0.2)
+        }
     }
 
 
@@ -67,6 +91,14 @@ def get_data_for_run(rtx_run_id):
     for i in range(0,exp_count):
         data[i] = db().get_data_points(rtx_run_id, i)
     return data, exp_count
+
+
+def get_list_of_configurations_for_run(rtx_run_id):
+    return db().get_list_of_configurations(rtx_run_id)
+
+
+def get_sample_size_for_run(rtx_run_id):
+    return db().get_sample_size(rtx_run_id)
 
 
 class NonLocal: DB = None

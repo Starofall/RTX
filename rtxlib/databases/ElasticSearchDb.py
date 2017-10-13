@@ -62,20 +62,37 @@ class ElasticSearchDb(Database):
             error("Error while saving rtx_run data in elasticsearch. Check connection to elasticsearch and restart.")
             exit(0)
 
-    def update_rtx_run_with_exp_count(self, rtx_run_id, exp_count):
-        body = {"doc": {"exp_count": exp_count}}
+    def update_rtx_run(self, rtx_run_id, exp_count, list_of_configurations=None):
+        doc = dict()
+        doc["exp_count"] = exp_count
+
+        if list_of_configurations:
+            doc["list_of_configurations"] = list_of_configurations
+
+        body = {"doc": doc}
         try:
             self.es.update(self.index, self.rtx_run_type_name, rtx_run_id, body)
         except ConnectionError:
             error("Error while updating rtx_run data in elasticsearch. Check connection to elasticsearch.")
 
     def get_exp_count(self, rtx_run_id):
-        res = self.es.get(self.index, rtx_run_id, self.rtx_run_type_name, _source=["exp_count"])
-        if "exp_count" in res["_source"]:
-            return res["_source"]["exp_count"]
+        return self.get_run_configuration_info(rtx_run_id, "exp_count")
+
+    def get_list_of_configurations(self, rtx_run_id):
+        return self.get_run_configuration_info(rtx_run_id, "list_of_configurations")
+
+    def get_sample_size(self, rtx_run_id):
+        strategy = self.get_run_configuration_info(rtx_run_id, "strategy")
+        return strategy["sample_size"]
+
+    def get_run_configuration_info(self, rtx_run_id, field):
+        res = self.es.get(self.index, rtx_run_id, self.rtx_run_type_name, _source=[field])
+        if field in res["_source"]:
+            return res["_source"][field]
         else:
-            error("Cannot retrieve experiment count for rtx run with id " + rtx_run_id)
+            error("'" + field + "' does not exist in rtx run with id " + rtx_run_id)
             return 0
+
 
     def save_data_point(self, exp_run, knobs, payload, data_point_count, rtx_run_id):
         data_point_id = rtx_run_id + "#" + str(exp_run) + "_" + str(data_point_count)
