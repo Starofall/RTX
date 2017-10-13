@@ -1,6 +1,7 @@
 from analysis_lib import Analysis
 from abc import ABCMeta, abstractmethod
 from scipy.stats import normaltest, anderson, kstest, shapiro
+from rtxlib import error
 
 
 class NormalityTest(Analysis):
