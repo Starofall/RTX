@@ -1,13 +1,12 @@
 #!/usr/bin/python
-from RTXRun import RTXRun
-from analysis_lib import setup_database
-
-from analysis_lib.two_sample_tests import Ttest
-from analysis_lib.two_sample_tests import TtestSampleSizeEstimation
+from rtxlib.rtx_run import setup_database
 from analysis_lib.normality_tests import AndersonDarling
+from analysis_lib.normality_tests import DAgostinoPearson
 from analysis_lib.normality_tests import KolmogorovSmirnov
 from analysis_lib.normality_tests import ShapiroWilk
-from analysis_lib.normality_tests import DAgostinoPearson
+from analysis_lib.two_sample_tests import Ttest
+from analysis_lib.two_sample_tests import TtestSampleSizeEstimation
+from rtxlib.rtx_run import RTXRun
 
 if __name__ == '__main__':
 

@@ -1,33 +1,44 @@
-import json
-import analysis_lib
-
+from abc import ABCMeta, abstractmethod
 from colorama import Fore
-from rtxlib import info, error, debug
-from rtxlib.databases import create_instance
-
-DB = None
-
-
-def setup_database():
-
-    with open('oeda_config.json') as json_data_file:
-        try:
-            config_data = json.load(json_data_file)
-        except ValueError:
-            error("> You need to specify a database configuration in oeda_config.json.")
-            exit(0)
-
-    if "database" not in config_data:
-        error("You need to specify a database configuration in oeda_config.json.")
-        exit(0)
-
-    database_config = config_data["database"]
-    info("> OEDA configuration: Using " + database_config["type"] + " database.", Fore.CYAN)
-    analysis_lib.DB = create_instance(database_config)
+from rtxlib.rtx_run import get_data_for_run
+from rtxlib.rtx_run import db
+from rtxlib import info, error
 
 
-def db():
-    if not DB:
-        error("You have to setup the database.")
-        exit(0)
-    return DB
+class Analysis(object):
+
+    __metaclass__ = ABCMeta
+
+    def __init__(self, rtx_run_ids):
+        self.rtx_run_ids = rtx_run_ids
+
+    def start(self):
+        data = self.get_data()
+        result = self.run(data)
+        self.save_result(self.name, result)
+
+    def get_data(self):
+        first_rtx_run_id = self.rtx_run_ids[0]
+        data, exp_count = get_data_for_run(first_rtx_run_id)
+
+        for rtx_run_id in self.rtx_run_ids[1:]:
+            new_data, new_exp_count = get_data_for_run(rtx_run_id)
+            for i in range(0,exp_count):
+                data[i] += new_data[i]
+
+        if not data:
+            error("Tried to run analysis on empty data. Aborting.")
+            return
+
+        return data
+
+    @abstractmethod
+    def run(self, data):
+        """ analysis-specific logic """
+        pass
+
+    def save_result(self, analysis_name, result):
+        db().save_analysis(self.rtx_run_ids, analysis_name, result)
+        info("> ", Fore.CYAN)
+        info("> Analysis of type '" + self.name + "' performed on datasets [" + ", ".join(str(x) for x in self.rtx_run_ids) + "]", Fore.CYAN)
+        info("> Result: " + str(result), Fore.CYAN)

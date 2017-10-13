@@ -1,4 +1,4 @@
-from analysis_lib.Analysis import Analysis
+from analysis_lib import Analysis
 from abc import ABCMeta, abstractmethod
 from scipy.stats import normaltest, anderson, kstest, shapiro
 

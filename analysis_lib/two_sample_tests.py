@@ -1,8 +1,9 @@
-from analysis_lib.Analysis import Analysis
+from analysis_lib import Analysis
 from scipy.stats import ttest_ind
 from math import sqrt, floor
 from numpy import var
 from statsmodels.stats.power import tt_ind_solve_power
+
 
 class Ttest(Analysis):
 

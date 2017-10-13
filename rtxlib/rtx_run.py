@@ -1,6 +1,9 @@
-from analysis_lib import db
 from types import ModuleType
 from rtxlib.workflow import execute_workflow
+from rtxlib import info, error
+from json import load
+from rtxlib.databases import create_instance
+from colorama import Fore
 
 
 class RTXRun(object):
@@ -64,3 +67,31 @@ def get_data_for_run(rtx_run_id):
     for i in range(0,exp_count):
         data[i] = db().get_data_points(rtx_run_id, i)
     return data, exp_count
+
+
+class NonLocal: DB = None
+
+
+def setup_database():
+
+    with open('oeda_config.json') as json_data_file:
+        try:
+            config_data = load(json_data_file)
+        except ValueError:
+            error("> You need to specify a database configuration in oeda_config.json.")
+            exit(0)
+
+    if "database" not in config_data:
+        error("You need to specify a database configuration in oeda_config.json.")
+        exit(0)
+
+    database_config = config_data["database"]
+    info("> OEDA configuration: Using " + database_config["type"] + " database.", Fore.CYAN)
+    NonLocal.DB = create_instance(database_config)
+
+
+def db():
+    if not NonLocal.DB:
+        error("You have to setup the database.")
+        exit(0)
+    return NonLocal.DB
