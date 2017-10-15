@@ -8,11 +8,12 @@ from colorama import Fore
 
 class RTXRun(object):
 
-    def __init__(self):
+    def __init__(self, primary_data_provider, change_provider, execution_strategy):
         self.wf = ModuleType('workflow')
-        self.wf.primary_data_provider = self.primary_data_provider
-        self.wf.change_provider = self.change_provider
-        self.wf.execution_strategy = self.execution_strategy
+        primary_data_provider["data_reducer"] = RTXRun.primary_data_reducer
+        self.wf.primary_data_provider = primary_data_provider
+        self.wf.change_provider = change_provider
+        self.wf.execution_strategy = execution_strategy
         self.wf.state_initializer = self.state_initializer
         self.wf.evaluator = self.evaluator
         self.wf.folder = None
@@ -26,17 +27,21 @@ class RTXRun(object):
             db().update_rtx_run(self.wf.rtx_run_id, self.wf.totalExperiments)
         return self.wf.rtx_run_id
 
+    @staticmethod
     def primary_data_reducer(state, newData, wf):
         db().save_data_point(wf.experimentCounter, wf.current_knobs, newData, state["data_points"], wf.rtx_run_id)
         state["data_points"] += 1
         return state
 
-    def state_initializer(self, state, wf):
+    @staticmethod
+    def state_initializer(state, wf):
         state["data_points"] = 0
         return state
 
-    def evaluator(self, resultState, wf):
+    @staticmethod
+    def evaluator(resultState, wf):
         return 0
+
 
     primary_data_provider = {
         "type": "kafka_consumer",
@@ -44,44 +49,6 @@ class RTXRun(object):
         "topic": "crowd-nav-trips",
         "serializer": "JSON",
         "data_reducer": primary_data_reducer
-    }
-
-    change_provider = {
-        "type": "kafka_producer",
-        "kafka_uri": "kafka:9092",
-        "topic": "crowd-nav-commands",
-        "serializer": "JSON",
-    }
-
-    # execution_strategy = {
-    #     "ignore_first_n_results": 0,
-    #     "sample_size": 4,
-    #     "type": "sequential",
-    #     "knobs": [
-    #         {"route_random_sigma": 0.0},
-    #         {"route_random_sigma": 0.2}
-    #     ]
-    # }
-
-    # execution_strategy = {
-    #     "ignore_first_n_results": 0,
-    #     "sample_size": 4,
-    #     "type": "sequential",
-    #     "knobs": [
-    #         {"route_random_sigma": 0.0},
-    #         {"route_random_sigma": 0.2},
-    #         {"route_random_sigma": 0.4}
-    #     ]
-    # }
-
-    execution_strategy = {
-        "ignore_first_n_results": 0,
-        "sample_size": 4,
-        "type": "step_explorer",
-        "knobs": {
-            "route_random_sigma": ([0.0, 0.2], 0.1),
-            "max_speed_and_length_factor": ([0.0, 0.4], 0.2)
-        }
     }
 
 

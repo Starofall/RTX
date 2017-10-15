@@ -11,11 +11,45 @@ from analysis_lib.n_sample_tests import OneWayAnova
 from analysis_lib.n_sample_tests import KruskalWallis
 from analysis_lib.n_sample_tests import TwoWayAnova
 
+class TestData:
+
+    primary_data_provider = {
+        "type": "kafka_consumer",
+        "kafka_uri": "kafka:9092",
+        "topic": "crowd-nav-trips",
+        "serializer": "JSON"
+        # "data_reducer": primary_data_reducer
+    }
+
+    change_provider = {
+        "type": "kafka_producer",
+        "kafka_uri": "kafka:9092",
+        "topic": "crowd-nav-commands",
+        "serializer": "JSON",
+    }
+
+    execution_strategy = {
+        "ignore_first_n_results": 0,
+        "sample_size": 4,
+        "type": "step_explorer",
+        "knobs": {
+            "route_random_sigma": ([0.0, 0.2], 0.1),
+            "max_speed_and_length_factor": ([0.0, 0.4], 0.2)
+        }
+        #     "type": "sequential",
+        #     "knobs": [
+        #         {"route_random_sigma": 0.0},
+        #         {"route_random_sigma": 0.2}
+        #     ]
+    }
+
+
 if __name__ == '__main__':
 
     setup_database()
     rtx_run_ids = list()
-    rtx_run_ids.append(RTXRun().start())
+    rtx_run = RTXRun(TestData.primary_data_provider, TestData.change_provider, TestData.execution_strategy)
+    rtx_run_ids.append(rtx_run.start())
     # rtx_run_ids.append(RTXRun().start())
 
     # Ttest(rtx_run_ids, alpha=0.05).start()
@@ -27,4 +61,5 @@ if __name__ == '__main__':
     # OneWayAnova(rtx_run_ids).start()
     # KruskalWallis(rtx_run_ids).start()
     TwoWayAnova(rtx_run_ids).start()
+
 
