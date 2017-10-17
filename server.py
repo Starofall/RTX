@@ -10,6 +10,10 @@ from analysis_lib.two_sample_tests import TtestSampleSizeEstimation
 from analysis_lib.n_sample_tests import OneWayAnova
 from analysis_lib.n_sample_tests import KruskalWallis
 from analysis_lib.n_sample_tests import TwoWayAnova
+from analysis_lib.equal_variances_tests import Levene
+from analysis_lib.equal_variances_tests import FlignerKilleen
+from analysis_lib.equal_variances_tests import Bartlett
+
 
 class TestData:
 
@@ -18,7 +22,6 @@ class TestData:
         "kafka_uri": "kafka:9092",
         "topic": "crowd-nav-trips",
         "serializer": "JSON"
-        # "data_reducer": primary_data_reducer
     }
 
     change_provider = {
@@ -32,15 +35,15 @@ class TestData:
         "ignore_first_n_results": 0,
         "sample_size": 4,
         "type": "step_explorer",
-        "knobs": {
-            "route_random_sigma": ([0.0, 0.2], 0.1),
-            "max_speed_and_length_factor": ([0.0, 0.4], 0.2)
-        }
-        #     "type": "sequential",
-        #     "knobs": [
-        #         {"route_random_sigma": 0.0},
-        #         {"route_random_sigma": 0.2}
-        #     ]
+        # "knobs": {
+        #     "route_random_sigma": ([0.0, 0.2], 0.1),
+        #     "max_speed_and_length_factor": ([0.0, 0.4], 0.2)
+        # }
+            "type": "sequential",
+            "knobs": [
+                {"route_random_sigma": 0.0},
+                {"route_random_sigma": 0.2}
+            ]
     }
 
 
@@ -60,6 +63,9 @@ if __name__ == '__main__':
     # KolmogorovSmirnov(rtx_run_ids, alpha=0.05).start()
     # OneWayAnova(rtx_run_ids).start()
     # KruskalWallis(rtx_run_ids).start()
-    TwoWayAnova(rtx_run_ids).start()
+    # TwoWayAnova(rtx_run_ids).start()
+    # Levene(rtx_run_ids).start()
+    # Bartlett(rtx_run_ids).start()
+    FlignerKilleen(rtx_run_ids).start()
 
 

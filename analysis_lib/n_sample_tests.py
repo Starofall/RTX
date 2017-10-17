@@ -11,6 +11,7 @@ from rtxlib import error
 from statsmodels.stats.anova import anova_lm
 import json
 
+
 class DifferentDistributionsTest(Analysis):
 
     __metaclass__ = ABCMeta
@@ -66,7 +67,7 @@ class OneWayAnova(DifferentDistributionsTest):
 class KruskalWallis(DifferentDistributionsTest):
     """Tests the null hypothesis that the population median of all of the groups are equal.
 
-    It is a non-parametric version of ANOVA.
+    It is a non-parametric version of one-way ANOVA.
     """
     name = "kruskal-wallis"
 
