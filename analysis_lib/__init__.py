@@ -9,8 +9,9 @@ class Analysis(object):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, rtx_run_ids):
+    def __init__(self, rtx_run_ids, y_key):
         self.rtx_run_ids = rtx_run_ids
+        self.y_key = y_key
 
     def start(self):
         data = self.get_data()

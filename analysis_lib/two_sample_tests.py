@@ -3,20 +3,30 @@ from scipy.stats import ttest_ind
 from math import sqrt, floor
 from numpy import var
 from statsmodels.stats.power import tt_ind_solve_power
+from rtxlib import error
 
 
-class Ttest(Analysis):
+class TwoSampleTest(Analysis):
+
+    def run(self, data):
+        if len(data) > 2:
+            error("Cannot run t-test on more than two samples.")
+
+
+class Ttest(TwoSampleTest):
 
     name = "t-test"
 
-    def __init__(self, rtx_run_ids, alpha=0.05):
-        super(self.__class__, self).__init__(rtx_run_ids)
+    def __init__(self, rtx_run_ids, y_key, alpha=0.05):
+        super(self.__class__, self).__init__(rtx_run_ids, y_key)
         self.alpha = alpha
 
     def run(self, data):
 
-        x1 = [d["overhead"] for d in data[0]]
-        x2 = [d["overhead"] for d in data[1]]
+        super(self.__class__, self).run(data)
+
+        x1 = [d[self.y_key] for d in data[0]]
+        x2 = [d[self.y_key] for d in data[1]]
 
         tstat, pvalue = ttest_ind(x1, x2, equal_var = False)
 
@@ -31,20 +41,22 @@ class Ttest(Analysis):
         return result
 
 
-class TtestSampleSizeEstimation(Analysis):
+class TtestSampleSizeEstimation(TwoSampleTest):
 
     name = "t-test-sample-estimation"
 
-    def __init__(self, rtx_run_ids, mean_diff, alpha=0.05, power=0.8):
-        super(self.__class__, self).__init__(rtx_run_ids)
+    def __init__(self, rtx_run_ids, y_key, mean_diff, alpha=0.05, power=0.8):
+        super(self.__class__, self).__init__(rtx_run_ids, y_key)
         self.alpha = alpha
         self.power = power
         self.mean_diff = mean_diff
 
     def run(self, data):
 
-        x1 = [d["overhead"] for d in data[0]]
-        x2 = [d["overhead"] for d in data[1]]
+        super(self.__class__, self).run(data)
+
+        x1 = [d[self.y_key] for d in data[0]]
+        x2 = [d[self.y_key] for d in data[1]]
 
         pooled_std = sqrt((var(x1) + var(x2)) / 2)
 

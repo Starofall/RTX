@@ -55,8 +55,9 @@ if __name__ == '__main__':
     rtx_run_ids.append(rtx_run.start())
     # rtx_run_ids.append(RTXRun().start())
 
-    # Ttest(rtx_run_ids, alpha=0.05).start()
-    # TtestSampleSizeEstimation(rtx_run_ids, mean_diff=0.1, alpha=0.05, power=0.8).start()
+    y_key = "overhead"
+    Ttest(rtx_run_ids, y_key, alpha=0.05).start()
+    TtestSampleSizeEstimation(rtx_run_ids, y_key, mean_diff=0.1, alpha=0.05, power=0.8).start()
     # DAgostinoPearson(rtx_run_ids, alpha=0.05).start()
     # ShapiroWilk(rtx_run_ids, alpha=0.05).start()
     # AndersonDarling(rtx_run_ids, alpha=0.05).start()
@@ -66,6 +67,6 @@ if __name__ == '__main__':
     # TwoWayAnova(rtx_run_ids).start()
     # Levene(rtx_run_ids).start()
     # Bartlett(rtx_run_ids).start()
-    FlignerKilleen(rtx_run_ids).start()
+    # FlignerKilleen(rtx_run_ids).start()
 
 
