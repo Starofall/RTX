@@ -104,10 +104,10 @@ class TwoWayAnova(Analysis):
 
         x1 = [config[0] for config in self.list_of_configurations for _ in xrange(self.sample_size)]
         x2 = [config[1] for config in self.list_of_configurations for _ in xrange(self.sample_size)]
-        y = [d["overhead"] for i in range(0, self.exp_count) for d in data[i]]
+        y = [d[self.y_key] for i in range(0, self.exp_count) for d in data[i]]
 
         data = dict()
-        data["overhead"] = y
+        data[self.y_key] = y
         data["route_random_sigma"] = x1
         data["max_speed_and_length_factor"] = x2
 
@@ -115,7 +115,7 @@ class TwoWayAnova(Analysis):
         print df
         print "------------------"
 
-        formula = 'overhead ~ C(route_random_sigma) + C(max_speed_and_length_factor) ' \
+        formula = self.y_key + ' ~ C(route_random_sigma) + C(max_speed_and_length_factor) ' \
                   '+ C(route_random_sigma):C(max_speed_and_length_factor)'
         data_lm = ols(formula, data=data).fit()
         print data_lm.summary()
