@@ -16,17 +16,17 @@ class DifferentDistributionsTest(Analysis):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, rtx_run_ids, alpha=0.05):
-        super(DifferentDistributionsTest, self).__init__(rtx_run_ids)
+    def __init__(self, rtx_run_ids, y_key, alpha=0.05):
+        super(DifferentDistributionsTest, self).__init__(rtx_run_ids, y_key)
         self.alpha = alpha
 
     def run(self, data):
 
-        x1 = [d["overhead"] for d in data[0]]
-        x2 = [d["overhead"] for d in data[1]]
-        x3 = [d["overhead"] for d in data[2]]
+        y = []
+        for i in range(0, self.exp_count):
+            y.append([d[self.y_key] for d in data[i]])
 
-        statistic, pvalue = self.get_statistic_and_pvalue(x1, x2, x3)
+        statistic, pvalue = self.get_statistic_and_pvalue(y)
 
         different_distributions = bool(pvalue <= self.alpha)
 
@@ -60,7 +60,7 @@ class OneWayAnova(DifferentDistributionsTest):
     """
     name = "one-way-anova"
 
-    def get_statistic_and_pvalue(self, *args):
+    def get_statistic_and_pvalue(self, args):
         return f_oneway(*args)
 
 
@@ -71,7 +71,7 @@ class KruskalWallis(DifferentDistributionsTest):
     """
     name = "kruskal-wallis"
 
-    def get_statistic_and_pvalue(self, *args):
+    def get_statistic_and_pvalue(self, args):
         return kruskal(*args)
 
 

@@ -21,6 +21,7 @@ class Analysis(object):
     def get_data(self):
         first_rtx_run_id = self.rtx_run_ids[0]
         data, exp_count = get_data_for_run(first_rtx_run_id)
+        self.exp_count = exp_count
 
         for rtx_run_id in self.rtx_run_ids[1:]:
             new_data, new_exp_count = get_data_for_run(rtx_run_id)
