@@ -9,14 +9,14 @@ class NormalityTest(Analysis):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, rtx_run_ids, alpha=0.05):
-        super(NormalityTest, self).__init__(rtx_run_ids)
+    def __init__(self, rtx_run_ids, y_key, alpha=0.05):
+        super(NormalityTest, self).__init__(rtx_run_ids, y_key)
         self.alpha = alpha
 
     def run(self, data):
 
-        x1 = [d["overhead"] for d in data[0]]
-        x2 = [d["overhead"] for d in data[1]]
+        x1 = [d[self.y_key] for d in data[0]]
+        x2 = [d[self.y_key] for d in data[1]]
 
         statistic, pvalue = self.get_statistic_and_pvalue(x1 + x2)
 
@@ -50,8 +50,8 @@ class AndersonDarling(NormalityTest):
 
     name = "anderson-darling"
 
-    def __init__(self, rtx_run_ids, alpha=0.05):
-        super(self.__class__, self).__init__(rtx_run_ids)
+    def __init__(self, rtx_run_ids, y_key, alpha=0.05):
+        super(self.__class__, self).__init__(rtx_run_ids, y_key)
         if alpha not in [0.15, 0.10, 0.05, 0.02, 0.01]:
             error("For Anderson-Darling test, please select as alpha one of 0.15, 0.10, 0.05, 0.02, or 0.01. "
                   "Falling back to default value of alpha = 0.05")
