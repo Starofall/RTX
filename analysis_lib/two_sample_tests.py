@@ -1,9 +1,9 @@
-from analysis_lib import Analysis
-from scipy.stats import ttest_ind
 from math import sqrt, floor
 from numpy import var
+from scipy.stats import ttest_ind
 from statsmodels.stats.power import tt_ind_solve_power
 from rtxlib import error
+from analysis_lib import Analysis
 
 
 class TwoSampleTest(Analysis):

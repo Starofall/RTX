@@ -1,18 +1,18 @@
+import json
+import pandas as pd
 from abc import ABCMeta, abstractmethod
-from analysis_lib import Analysis
 from scipy.stats import f_oneway
 from scipy.stats import kruskal
 from scipy.stats import levene
 from scipy.stats import fligner
 from scipy.stats import bartlett
 from statsmodels.formula.api import ols
-import pandas as pd
+from statsmodels.stats.anova import anova_lm
 from rtxlib.rtx_run import get_data_for_run
 from rtxlib.rtx_run import get_list_of_configurations_for_run
 from rtxlib.rtx_run import get_sample_size_for_run
 from rtxlib import error
-from statsmodels.stats.anova import anova_lm
-import json
+from analysis_lib import Analysis
 
 
 class DifferentDistributionsTest(Analysis):
