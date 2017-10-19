@@ -2,17 +2,26 @@ from math import sqrt, floor
 from numpy import var
 from scipy.stats import ttest_ind
 from statsmodels.stats.power import tt_ind_solve_power
-from rtxlib import error
+from rtxlib import warn, error
 from analysis_lib import Analysis
 
 
 class TwoSampleTest(Analysis):
 
-    def run(self, data):
-        if len(data) > 2:
-            error("Cannot run " + self.name + " on more than two samples.")
-            return
+    def run(self, data, knobs):
 
+        if len(data) < 2:
+            error("Cannot run " + self.name + " on less than two samples.")
+            return False
+
+        if len(data) > 2:
+            warn("Cannot run " + self.name + " on more than two samples.")
+            warn("Comparing only the first two samples.")
+
+        self.y1 = [d[self.y_key] for d in data[0]]
+        self.y2 = [d[self.y_key] for d in data[1]]
+
+        return True
 
 class Ttest(TwoSampleTest):
 
@@ -22,19 +31,18 @@ class Ttest(TwoSampleTest):
         super(self.__class__, self).__init__(rtx_run_ids, y_key)
         self.alpha = alpha
 
-    def run(self, data):
+    def run(self, data, knobs):
 
-        super(self.__class__, self).run(data)
+        if not super(self.__class__, self).run(data, knobs):
+            error("Aborting analysis.")
+            return
 
-        x1 = [d[self.y_key] for d in data[0]]
-        x2 = [d[self.y_key] for d in data[1]]
-
-        tstat, pvalue = ttest_ind(x1, x2, equal_var = False)
+        statistic, pvalue = ttest_ind(self.y1, self.y2, equal_var = False)
 
         different_averages = bool(pvalue <= self.alpha)
 
         result = dict()
-        result["tstat"] = tstat
+        result["statistic"] = statistic
         result["pvalue"] = pvalue
         result["alpha"] = self.alpha
         result["different_averages"] = different_averages
@@ -52,14 +60,13 @@ class TtestSampleSizeEstimation(TwoSampleTest):
         self.power = power
         self.mean_diff = mean_diff
 
-    def run(self, data):
+    def run(self, data, knobs):
 
-        super(self.__class__, self).run(data)
+        if not super(self.__class__, self).run(data, knobs):
+            error("Aborting analysis.")
+            return
 
-        x1 = [d[self.y_key] for d in data[0]]
-        x2 = [d[self.y_key] for d in data[1]]
-
-        pooled_std = sqrt((var(x1) + var(x2)) / 2)
+        pooled_std = sqrt((var(self.y1) + var(self.y2)) / 2)
 
         effect_size = self.mean_diff / pooled_std
 

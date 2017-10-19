@@ -19,12 +19,10 @@ class RTXRun(object):
         self.wf.folder = None
 
     def start(self):
+        self.wf.execution_strategy["exp_count"] = \
+            calculate_experiment_count(self.wf.execution_strategy["type"], self.wf.execution_strategy["knobs"])
         self.wf.name = self.wf.rtx_run_id = db().save_rtx_run(self.wf.execution_strategy)
         execute_workflow(self.wf)
-        if hasattr(self.wf, "list_of_configurations"):
-            db().update_rtx_run(self.wf.rtx_run_id, self.wf.totalExperiments, self.wf.list_of_configurations)
-        else:
-            db().update_rtx_run(self.wf.rtx_run_id, self.wf.totalExperiments)
         return self.wf.rtx_run_id
 
     @staticmethod
@@ -43,29 +41,38 @@ class RTXRun(object):
         return 0
 
 
-    primary_data_provider = {
-        "type": "kafka_consumer",
-        "kafka_uri": "kafka:9092",
-        "topic": "crowd-nav-trips",
-        "serializer": "JSON",
-        "data_reducer": primary_data_reducer
-    }
+def calculate_experiment_count(type, knobs):
+
+    if type == "sequential":
+        return len(knobs)
+
+    if type == "step_explorer":
+        variables = []
+        parameters_values = []
+        for key in knobs:
+            variables += [key]
+            lower = knobs[key][0][0]
+            upper = knobs[key][0][1]
+            step = knobs[key][1]
+            value = lower
+            parameter_values = []
+            while value <= upper:
+                parameter_values += [[value]]
+                value += step
+            parameters_values += [parameter_values]
+        list_of_configurations = reduce(lambda list1, list2: [x + y for x in list1 for y in list2], parameters_values)
+        return len(list_of_configurations)
 
 
 def get_data_for_run(rtx_run_id):
     data = dict()
+    knobs = dict()
     exp_count = db().get_exp_count(rtx_run_id)
     for i in range(0,exp_count):
-        data[i] = db().get_data_points(rtx_run_id, i)
-    return data, exp_count
-
-
-def get_list_of_configurations_for_run(rtx_run_id):
-    return db().get_list_of_configurations(rtx_run_id)
-
-
-def get_sample_size_for_run(rtx_run_id):
-    return db().get_sample_size(rtx_run_id)
+        fetched = db().get_data_points(rtx_run_id, i)
+        data[i] = [d[0] for d in fetched]
+        knobs[i] = [d[1] for d in fetched]
+    return data, knobs, exp_count
 
 
 class NonLocal: DB = None

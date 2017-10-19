@@ -3,11 +3,21 @@ from scipy.stats import normaltest
 from scipy.stats import anderson
 from scipy.stats import kstest
 from scipy.stats import shapiro
-from rtxlib import error
+from rtxlib import warn, error
 from analysis_lib import Analysis
 
 
-class NormalityTest(Analysis):
+class OneSampleTest(Analysis):
+
+    def run(self, data, knobs):
+        if len(data) > 1:
+            warn("Cannot run " + self.name + " on more than one sample.")
+            warn("Running only for first sample.")
+
+        self.y1 = [d[self.y_key] for d in data[0]]
+
+
+class NormalityTest(OneSampleTest):
     """Tests the null hypothesis that the sample comes from a normal distribution."""
 
     __metaclass__ = ABCMeta
@@ -16,12 +26,11 @@ class NormalityTest(Analysis):
         super(NormalityTest, self).__init__(rtx_run_ids, y_key)
         self.alpha = alpha
 
-    def run(self, data):
+    def run(self, data, knobs):
 
-        x1 = [d[self.y_key] for d in data[0]]
-        x2 = [d[self.y_key] for d in data[1]]
+        super(NormalityTest, self).run(data, knobs)
 
-        statistic, pvalue = self.get_statistic_and_pvalue(x1 + x2)
+        statistic, pvalue = self.get_statistic_and_pvalue(self.y1)
 
         not_normal = bool(pvalue <= self.alpha)
 
@@ -34,18 +43,20 @@ class NormalityTest(Analysis):
         return result
 
     @abstractmethod
-    def get_statistic_and_pvalue(self, x):
+    def get_statistic_and_pvalue(self, y):
         """ Specific to each normality test """
         pass
 
 
 class DAgostinoPearson(NormalityTest):
-    """Combines skew and kurtosis to produce an omnibus test of normality."""
+    """Combines skew and kurtosis to produce an omnibus test of normality.
+
+    Need to use with samples with size>=8."""
 
     name = "dagostino-pearson"
 
-    def get_statistic_and_pvalue(self, x):
-        return normaltest(x)
+    def get_statistic_and_pvalue(self, y):
+        return normaltest(y)
 
 
 class AndersonDarling(NormalityTest):
@@ -62,8 +73,8 @@ class AndersonDarling(NormalityTest):
         else:
             self.alpha = alpha
 
-    def get_statistic_and_pvalue(self, x):
-        statistic, critical_values, significance_level = anderson(x)
+    def get_statistic_and_pvalue(self, y):
+        statistic, critical_values, significance_level = anderson(y)
         pvalue = critical_values[significance_level.tolist().index(100 * self.alpha)]
         return statistic, pvalue
 
@@ -77,8 +88,8 @@ class KolmogorovSmirnov(NormalityTest):
 
     name = "kolmogorov-smirnov"
 
-    def get_statistic_and_pvalue(self, x):
-        return kstest(x, "norm")
+    def get_statistic_and_pvalue(self, y):
+        return kstest(y, "norm")
 
 
 class ShapiroWilk(NormalityTest):
@@ -91,5 +102,5 @@ class ShapiroWilk(NormalityTest):
 
     name = "shapiro-wilk"
 
-    def get_statistic_and_pvalue(self, x):
-        return shapiro(x)
+    def get_statistic_and_pvalue(self, y):
+        return shapiro(y)

@@ -62,37 +62,13 @@ class ElasticSearchDb(Database):
             error("Error while saving rtx_run data in elasticsearch. Check connection to elasticsearch and restart.")
             exit(0)
 
-    def update_rtx_run(self, rtx_run_id, exp_count, list_of_configurations=None):
-        doc = dict()
-        doc["exp_count"] = exp_count
-
-        if list_of_configurations:
-            doc["list_of_configurations"] = list_of_configurations
-
-        body = {"doc": doc}
-        try:
-            self.es.update(self.index, self.rtx_run_type_name, rtx_run_id, body)
-        except ConnectionError:
-            error("Error while updating rtx_run data in elasticsearch. Check connection to elasticsearch.")
-
     def get_exp_count(self, rtx_run_id):
-        return self.get_run_configuration_info(rtx_run_id, "exp_count")
-
-    def get_list_of_configurations(self, rtx_run_id):
-        return self.get_run_configuration_info(rtx_run_id, "list_of_configurations")
-
-    def get_sample_size(self, rtx_run_id):
-        strategy = self.get_run_configuration_info(rtx_run_id, "strategy")
-        return strategy["sample_size"]
-
-    def get_run_configuration_info(self, rtx_run_id, field):
-        res = self.es.get(self.index, rtx_run_id, self.rtx_run_type_name, _source=[field])
-        if field in res["_source"]:
-            return res["_source"][field]
+        res = self.es.get(self.index, rtx_run_id, self.rtx_run_type_name, _source=["strategy"])
+        if "exp_count" in res["_source"]["strategy"]:
+            return res["_source"]["strategy"]["exp_count"]
         else:
-            error("'" + field + "' does not exist in rtx run with id " + rtx_run_id)
+            error("'exp_count' does not exist in rtx run' strategy with id " + rtx_run_id)
             return 0
-
 
     def save_data_point(self, exp_run, knobs, payload, data_point_count, rtx_run_id):
         data_point_id = rtx_run_id + "#" + str(exp_run) + "_" + str(data_point_count)
@@ -120,7 +96,7 @@ class ElasticSearchDb(Database):
         }
         self.indices_client.refresh()
         res = self.es.search(self.index, self.data_point_type_name, query)
-        return [data["_source"]["payload"] for data in res["hits"]["hits"]]
+        return [(data["_source"]["payload"], data["_source"]["knobs"]) for data in res["hits"]["hits"]]
 
     def save_analysis(self, rtx_run_ids, name, result):
         ids_str = reduce(lambda a,b: a+"+"+b, rtx_run_ids[1:], rtx_run_ids[0])
