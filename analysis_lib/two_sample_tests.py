@@ -11,7 +11,7 @@ class TwoSampleTest(Analysis):
     def run(self, data):
         if len(data) > 2:
             error("Cannot run " + self.name + " on more than two samples.")
-            exit(0)
+            return
 
 
 class Ttest(TwoSampleTest):
