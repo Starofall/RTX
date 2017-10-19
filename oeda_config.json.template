@@ -20,7 +20,8 @@
               "ignore_first_n_results":  { "type": "integer" },
               "knobs":                   { "type": "object"  },
               "sample_size":             { "type": "integer" },
-              "type":                    { "type": "keyword" }
+              "type":                    { "type": "keyword" },
+              "exp_count":               { "type": "integer" }
             }
           },
           "created":  { "type": "date"  }
