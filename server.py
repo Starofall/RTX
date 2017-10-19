@@ -9,7 +9,7 @@ from analysis_lib.two_sample_tests import Ttest
 from analysis_lib.two_sample_tests import TtestSampleSizeEstimation
 from analysis_lib.n_sample_tests import OneWayAnova
 from analysis_lib.n_sample_tests import KruskalWallis
-from analysis_lib.factorial_tests import TwoWayAnova
+from analysis_lib.factorial_tests import FactorialAnova
 from analysis_lib.n_sample_tests import Levene
 from analysis_lib.n_sample_tests import FlignerKilleen
 from analysis_lib.n_sample_tests import Bartlett
@@ -31,28 +31,30 @@ class TestData:
         "serializer": "JSON",
     }
 
+
+if __name__ == '__main__':
+
     execution_strategy = {
         "ignore_first_n_results": 0,
-        "sample_size": 4,
+        "sample_size": 2,
         "type": "step_explorer",
         "knobs": {
-            "route_random_sigma": ([0.0, 0.2], 0.1),
-            "max_speed_and_length_factor": ([0.0, 0.4], 0.2)
+            "route_random_sigma": ([0.0, 0.2], 0.2),
+            "max_speed_and_length_factor": ([0.0, 0.4], 0.4),
+            # "exploration_percentage": ([0.0, 0.2], 0.2),
+            # "average_edge_duration_factor": ([0.8, 1], 0.2),
         }
         # "type": "sequential",
         # "knobs": [
         #     {"route_random_sigma": 0.0},
-            # {"route_random_sigma": 0.2},
-            # {"route_random_sigma": 0.4}
+        # {"route_random_sigma": 0.2},
+        # {"route_random_sigma": 0.4}
         # ]
     }
 
-
-if __name__ == '__main__':
-
     setup_database()
     rtx_run_ids = list()
-    rtx_run = RTXRun(TestData.primary_data_provider, TestData.change_provider, TestData.execution_strategy)
+    rtx_run = RTXRun(TestData.primary_data_provider, TestData.change_provider, execution_strategy)
     rtx_run_ids.append(rtx_run.start())
     # rtx_run = RTXRun(TestData.primary_data_provider, TestData.change_provider, TestData.execution_strategy)
     # rtx_run_ids.append(rtx_run.start())
@@ -80,20 +82,20 @@ if __name__ == '__main__':
     ##########################
     ## Different distributions tests
     ##########################
-    OneWayAnova(rtx_run_ids, y_key).start()
-    KruskalWallis(rtx_run_ids, y_key).start()
+    # OneWayAnova(rtx_run_ids, y_key).start()
+    # KruskalWallis(rtx_run_ids, y_key).start()
 
     ##########################
     ## Equal variance tests
     ##########################
-    Levene(rtx_run_ids, y_key).start()
-    Bartlett(rtx_run_ids, y_key).start()
-    FlignerKilleen(rtx_run_ids, y_key).start()
+    # Levene(rtx_run_ids, y_key).start()
+    # Bartlett(rtx_run_ids, y_key).start()
+    # FlignerKilleen(rtx_run_ids, y_key).start()
 
     ##########################
     ## Two-way anova
     ##########################
-    TwoWayAnova(rtx_run_ids, y_key).start()
+    FactorialAnova(rtx_run_ids, y_key, execution_strategy["knobs"].keys()).start()
 
     # TODO: check:
     # racing algorithms: irace
