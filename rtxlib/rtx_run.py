@@ -78,7 +78,7 @@ def get_data_for_run(rtx_run_id):
     data = dict()
     knobs = dict()
     exp_count = db().get_exp_count(rtx_run_id)
-    for i in range(0,exp_count):
+    for i in range(exp_count):
         fetched = db().get_data_points(rtx_run_id, i)
         data[i] = [d[0] for d in fetched]
         knobs[i] = [d[1] for d in fetched]
