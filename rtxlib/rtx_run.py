@@ -8,7 +8,16 @@ from colorama import Fore
 
 class RTXRun(object):
 
-    def __init__(self, primary_data_provider, change_provider, execution_strategy):
+    @staticmethod
+    def create(target_system_id, execution_strategy):
+        primary_data_provider, change_provider = db().use_target_system(target_system_id)
+        if not primary_data_provider or not change_provider:
+            error("Cannot create rtx run.")
+            return None
+        return RTXRun(target_system_id, primary_data_provider, change_provider, execution_strategy)
+
+    def __init__(self, target_system_id, primary_data_provider, change_provider, execution_strategy):
+        self.target_system_id = target_system_id
         self.wf = ModuleType('workflow')
         primary_data_provider["data_reducer"] = RTXRun.primary_data_reducer
         self.wf.primary_data_provider = primary_data_provider
@@ -23,6 +32,7 @@ class RTXRun(object):
             calculate_experiment_count(self.wf.execution_strategy["type"], self.wf.execution_strategy["knobs"])
         self.wf.name = self.wf.rtx_run_id = db().save_rtx_run(self.wf.execution_strategy)
         execute_workflow(self.wf)
+        db().release_target_system(self.target_system_id)
         return self.wf.rtx_run_id
 
     @staticmethod

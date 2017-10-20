@@ -8,6 +8,18 @@ class Database:
     def __init__(self):
         pass
 
+    def save_target_system(self, target_system_id, primary_data_provider, change_provider):
+        """ saves the parameters of an OEDA target system with the provided id """
+        pass
+
+    def use_target_system(self, target_system_id):
+        """ marks the OEDA target system as in use and retrieves its configuration """
+        pass
+
+    def release_target_system(self, target_system_id):
+        """ marks the OEDA target system as not in use """
+        pass
+
     def save_rtx_run(self, strategy):
         """ saves the parameters of an rtx run and returns the auto-generated id """
         pass

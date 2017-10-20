@@ -26,6 +26,8 @@ class ElasticSearchDb(Database):
         self.analysis_type_name = analysis_type["name"]
         data_point_type = db_config["data_point_type"]
         self.data_point_type_name = data_point_type["name"]
+        target_system_type = db_config["target_system_type"]
+        self.target_system_type_name = target_system_type["name"]
 
         mappings = dict()
         # user can specify an type without a mapping (dynamic mapping)
@@ -51,6 +53,47 @@ class ElasticSearchDb(Database):
             print(traceback.format_exc())
             exit(0)
 
+    def save_target_system(self, target_system_id, primary_data_provider, change_provider):
+        body = dict()
+        body["primary_data_provider"] = primary_data_provider
+        body["change_provider"] = change_provider
+        body["in_use"] = False
+        body["created"] = datetime.now()
+        try:
+            self.es.index(self.index, self.target_system_type_name, body, target_system_id)
+        except ConnectionError:
+            error("Error while saving rtx_run data in elasticsearch. Check connection to elasticsearch and restart.")
+            exit(0)
+
+    def use_target_system(self, target_system_id):
+        self.set_target_system_in_use(target_system_id)
+        return self.get_target_system_info(target_system_id)
+
+    def release_target_system(self, target_system_id):
+        self.toggle_target_system_in_use(target_system_id, False)
+
+    def set_target_system_in_use(self, target_system_id):
+        self.toggle_target_system_in_use(target_system_id, True)
+
+    def get_target_system_info(self, target_system_id):
+        res = self.es.get(self.index, target_system_id, self.target_system_type_name,
+                          _source=["primary_data_provider", "change_provider"])
+        source = res["_source"]
+        if "primary_data_provider" not in source:
+            error("'primary_data_provider' does not exist in target system with id " + target_system_id)
+            return None, None
+        if "change_provider" not in source:
+            error("'change_provider' does not exist in target system with id " + target_system_id)
+            return None, None
+        return source["primary_data_provider"], source["change_provider"]
+
+    def toggle_target_system_in_use(self, target_system_id, in_use):
+        body = {"doc": {"in_use": in_use}}
+        try:
+            self.es.update(self.index, self.target_system_type_name, target_system_id, body)
+        except ConnectionError:
+            error("Error while updating target system in_use flag in elasticsearch. Check connection to elasticsearch.")
+
     def save_rtx_run(self, strategy):
         body = dict()
         body["strategy"] = strategy
@@ -64,11 +107,10 @@ class ElasticSearchDb(Database):
 
     def get_exp_count(self, rtx_run_id):
         res = self.es.get(self.index, rtx_run_id, self.rtx_run_type_name, _source=["strategy"])
-        if "exp_count" in res["_source"]["strategy"]:
-            return res["_source"]["strategy"]["exp_count"]
-        else:
+        if "exp_count" not  in res["_source"]["strategy"]:
             error("'exp_count' does not exist in rtx run' strategy with id " + rtx_run_id)
             return 0
+        return res["_source"]["strategy"]["exp_count"]
 
     def save_data_point(self, exp_run, knobs, payload, data_point_count, rtx_run_id):
         data_point_id = rtx_run_id + "#" + str(exp_run) + "_" + str(data_point_count)

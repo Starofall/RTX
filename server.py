@@ -13,6 +13,7 @@ from analysis_lib.factorial_tests import FactorialAnova
 from analysis_lib.n_sample_tests import Levene
 from analysis_lib.n_sample_tests import FlignerKilleen
 from analysis_lib.n_sample_tests import Bartlett
+from rtxlib.rtx_run import db
 
 
 class TestData:
@@ -53,10 +54,19 @@ if __name__ == '__main__':
     }
 
     setup_database()
+
+    target_system_id = "CrowdNav"
+    db().save_target_system(target_system_id, TestData.primary_data_provider, TestData.change_provider)
+
     rtx_run_ids = list()
-    rtx_run = RTXRun(TestData.primary_data_provider, TestData.change_provider, execution_strategy)
+    rtx_run = RTXRun.create(target_system_id, execution_strategy)
+
+    if not rtx_run:
+        exit(0)
+
     rtx_run_ids.append(rtx_run.start())
-    # rtx_run = RTXRun(TestData.primary_data_provider, TestData.change_provider, TestData.execution_strategy)
+
+    # rtx_run = RTXRun.create(target_system_id, execution_strategy)
     # rtx_run_ids.append(rtx_run.start())
 
     y_key = "overhead"

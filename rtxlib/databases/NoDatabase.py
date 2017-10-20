@@ -7,6 +7,15 @@ class NoDatabase(Database):
     def __init__(self):
         pass
 
+    def save_target_system(self, target_system_id, primary_data_provider, change_provider):
+        error("Cannot save target system data. Please specify a database configuration in config.json")
+
+    def use_target_system(self, target_system_id):
+        error("Cannot use target system. Please specify a database configuration in config.json")
+
+    def release_target_system(self, target_system_id):
+        error("Cannot release target system. Please specify a database configuration in config.json")
+
     def save_rtx_run(self, strategy):
         error("Cannot save rtx run data. Please specify a database configuration in config.json")
 
