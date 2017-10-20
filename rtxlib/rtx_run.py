@@ -27,7 +27,7 @@ class RTXRun(object):
         self.wf.evaluator = self.evaluator
         self.wf.folder = None
 
-    def start(self):
+    def run(self):
         self.wf.execution_strategy["exp_count"] = \
             calculate_experiment_count(self.wf.execution_strategy["type"], self.wf.execution_strategy["knobs"])
         self.wf.name = self.wf.rtx_run_id = db().save_rtx_run(self.wf.execution_strategy)
@@ -49,6 +49,11 @@ class RTXRun(object):
     @staticmethod
     def evaluator(resultState, wf):
         return 0
+
+
+def run_rtx_run(rtx_run):
+    info("Running rtx on target system with id: " + str(rtx_run.target_system_id))
+    return rtx_run.run()
 
 
 def calculate_experiment_count(type, knobs):

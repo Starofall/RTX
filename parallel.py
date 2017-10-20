@@ -16,6 +16,8 @@ from analysis_lib.n_sample_tests import Bartlett
 from rtxlib.rtx_run import db
 from math import ceil
 from rtxlib import error
+from multiprocessing.dummy import Pool as ThreadPool
+from rtxlib.rtx_run import run_rtx_run
 
 
 class TestData:
@@ -102,16 +104,10 @@ if __name__ == '__main__':
         "type": "step_explorer",
         "knobs": {
             "route_random_sigma": ([0.0, 0.2], 0.2),
-            # "max_speed_and_length_factor": ([0.0, 0.1], 0.1),
+            "max_speed_and_length_factor": ([0.0, 0.1], 0.1),
             # "exploration_percentage": ([0.0, 0.2], 0.2),
             # "average_edge_duration_factor": ([0.8, 1], 0.2),
         }
-        # "type": "sequential",
-        # "knobs": [
-        #     {"route_random_sigma": 0.0},
-        #     {"route_random_sigma": 0.2},
-            # {"route_random_sigma": 0.4}
-        # ]
     }
 
     setup_database()
@@ -136,9 +132,10 @@ if __name__ == '__main__':
             exit(0)
         rtx_runs.append(rtx_run)
 
-    rtx_run_ids = list()
-    for rtx_run in rtx_runs:
-        rtx_run_ids.append(rtx_run.start())
+    pool = ThreadPool(target_systems_count)
+    rtx_run_ids = pool.map(run_rtx_run, rtx_runs)
+    pool.close()
+    pool.join()
 
     y_key = "overhead"
 
@@ -176,7 +173,7 @@ if __name__ == '__main__':
     ##########################
     ## Two-way anova
     ##########################
-    # FactorialAnova(rtx_run_ids, y_key, execution_strategy["knobs"].keys()).start()
+    FactorialAnova(rtx_run_ids, y_key, execution_strategy["knobs"].keys()).start()
 
     # TODO: check:
     # racing algorithms: irace
