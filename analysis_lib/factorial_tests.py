@@ -26,9 +26,9 @@ class FactorialAnova(Analysis):
             return
 
         dataframe_data = dict()
-        dataframe_data[self.y_key] = [d[self.y_key] for i in range(0, self.exp_count) for d in data[i]]
+        dataframe_data[self.y_key] = [d[self.y_key] for i in range(self.exp_count) for d in data[i]]
         for knob_key in self.knob_keys:
-            dataframe_data[knob_key] = [d[knob_key] for i in range(0, self.exp_count) for d in knobs[i]]
+            dataframe_data[knob_key] = [d[knob_key] for i in range(self.exp_count) for d in knobs[i]]
 
         df = pd.DataFrame(dataframe_data)
         print df

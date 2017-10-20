@@ -16,7 +16,7 @@ class NSampleTest(Analysis):
             error("Cannot run " + self.name + " on less than two samples.")
             return False
 
-        self.y = [[d[self.y_key] for d in data[i]] for i in range(0, self.exp_count)]
+        self.y = [[d[self.y_key] for d in data[i]] for i in range(self.exp_count)]
 
         return True
 

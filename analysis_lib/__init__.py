@@ -31,7 +31,7 @@ class Analysis(object):
 
         for rtx_run_id in self.rtx_run_ids[1:]:
             new_data, new_knobs, new_exp_count = get_data_for_run(rtx_run_id)
-            for i in range(0,self.exp_count):
+            for i in range(self.exp_count):
                 data[i] += new_data[i]
                 knobs[i] += new_knobs[i]
 
