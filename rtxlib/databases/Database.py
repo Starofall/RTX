@@ -8,24 +8,24 @@ class Database:
     def __init__(self):
         pass
 
+    def save_target_system(self, target_system_id, primary_data_provider, change_provider):
+        """ saves the parameters of an OEDA target system with the provided id """
+        pass
+
+    def use_target_system(self, target_system_id):
+        """ marks the OEDA target system as in use and retrieves its configuration """
+        pass
+
+    def release_target_system(self, target_system_id):
+        """ marks the OEDA target system as not in use """
+        pass
+
     def save_rtx_run(self, strategy):
         """ saves the parameters of an rtx run and returns the auto-generated id """
         pass
 
-    def update_rtx_run(self, rtx_run_id, exp_count, list_of_configurations):
-        """ updates the experiment count and the list of configurations parameters of the rtx run with the given id """
-        pass
-
     def get_exp_count(self, rtx_run_id):
         """ returns the experiment count parameter of the rtx run specified by its id """
-        pass
-
-    def get_list_of_configurations(self, rtx_run_id):
-        """ returns the list of configurations parameter of the rtx run specified by its id """
-        pass
-
-    def get_sample_size(self, rtx_run_id):
-        """ returns the streategy's sample size of the rtx run specified by its id """
         pass
 
     def save_data_point(self, exp_run, knobs, payload, data_point_id, rtx_run_id):

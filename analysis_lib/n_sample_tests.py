@@ -1,32 +1,41 @@
 from abc import ABCMeta, abstractmethod
-from analysis_lib import Analysis
 from scipy.stats import f_oneway
 from scipy.stats import kruskal
-from statsmodels.formula.api import ols
-import pandas as pd
-from rtxlib.rtx_run import get_data_for_run
-from rtxlib.rtx_run import get_list_of_configurations_for_run
-from rtxlib.rtx_run import get_sample_size_for_run
+from scipy.stats import levene
+from scipy.stats import fligner
+from scipy.stats import bartlett
 from rtxlib import error
-from statsmodels.stats.anova import anova_lm
-import json
+from analysis_lib import Analysis
 
 
-class DifferentDistributionsTest(Analysis):
+class NSampleTest(Analysis):
+
+    def run(self, data, knobs):
+
+        if len(data) < 2:
+            error("Cannot run " + self.name + " on less than two samples.")
+            return False
+
+        self.y = [[d[self.y_key] for d in data[i]] for i in range(self.exp_count)]
+
+        return True
+
+
+class DifferentDistributionsTest(NSampleTest):
 
     __metaclass__ = ABCMeta
 
-    def __init__(self, rtx_run_ids, alpha=0.05):
-        super(DifferentDistributionsTest, self).__init__(rtx_run_ids)
+    def __init__(self, rtx_run_ids, y_key, alpha=0.05):
+        super(DifferentDistributionsTest, self).__init__(rtx_run_ids, y_key)
         self.alpha = alpha
 
-    def run(self, data):
+    def run(self, data, knobs):
 
-        x1 = [d["overhead"] for d in data[0]]
-        x2 = [d["overhead"] for d in data[1]]
-        x3 = [d["overhead"] for d in data[2]]
+        if not super(DifferentDistributionsTest, self).run(data, knobs):
+            error("Aborting analysis.")
+            return
 
-        statistic, pvalue = self.get_statistic_and_pvalue(x1, x2, x3)
+        statistic, pvalue = self.get_statistic_and_pvalue(self.y)
 
         different_distributions = bool(pvalue <= self.alpha)
 
@@ -60,7 +69,7 @@ class OneWayAnova(DifferentDistributionsTest):
     """
     name = "one-way-anova"
 
-    def get_statistic_and_pvalue(self, *args):
+    def get_statistic_and_pvalue(self, args):
         return f_oneway(*args)
 
 
@@ -71,83 +80,72 @@ class KruskalWallis(DifferentDistributionsTest):
     """
     name = "kruskal-wallis"
 
-    def get_statistic_and_pvalue(self, *args):
+    def get_statistic_and_pvalue(self, args):
         return kruskal(*args)
 
 
-class TwoWayAnova(Analysis):
-    """ For explanation of the different types of ANOVA check:
-    https://mcfromnz.wordpress.com/2011/03/02/anova-type-iiiiii-ss-explained/
-    """
+class EqualVarianceTest(NSampleTest):
 
-    name = "two-way-anova"
+    __metaclass__ = ABCMeta
 
-    def get_data(self):
-        first_rtx_run_id = self.rtx_run_ids[0]
-        data, exp_count = get_data_for_run(first_rtx_run_id)
-        self.exp_count = exp_count
-        self.list_of_configurations = get_list_of_configurations_for_run(first_rtx_run_id)
-        self.sample_size = get_sample_size_for_run(first_rtx_run_id)
+    def __init__(self, rtx_run_ids, y_key, alpha=0.05):
+        super(EqualVarianceTest, self).__init__(rtx_run_ids, y_key)
+        self.alpha = alpha
 
-        for rtx_run_id in self.rtx_run_ids[1:]:
-            new_data, new_exp_count, new_list_of_cofigurations = get_data_for_run(rtx_run_id)
-            for i in range(0,exp_count):
-                data[i] += new_data[i]
+    def run(self, data, knobs):
 
-        if not data:
-            error("Tried to run analysis on empty data. Aborting.")
+        if not super(EqualVarianceTest, self).run(data, knobs):
+            error("Aborting analysis.")
             return
 
-        return data
+        statistic, pvalue = self.get_statistic_and_pvalue(self.y)
 
-    def run(self, data):
+        not_equal_variance = bool(pvalue <= self.alpha)
 
-        x1 = [config[0] for config in self.list_of_configurations for _ in xrange(self.sample_size)]
-        x2 = [config[1] for config in self.list_of_configurations for _ in xrange(self.sample_size)]
-        y = [d["overhead"] for i in range(0, self.exp_count) for d in data[i]]
+        result = dict()
+        result["statistic"] = statistic
+        result["pvalue"] = pvalue
+        result["alpha"] = self.alpha
+        result["not_equal_variance"] = not_equal_variance
 
-        data = dict()
-        data["overhead"] = y
-        data["route_random_sigma"] = x1
-        data["max_speed_and_length_factor"] = x2
+        return result
 
-        df = pd.DataFrame(data)
-        print df
-        print "------------------"
+    @abstractmethod
+    def get_statistic_and_pvalue(self, args):
+        """ Specific to each different-distribution test """
+        pass
 
-        formula = 'overhead ~ C(route_random_sigma) + C(max_speed_and_length_factor) ' \
-                  '+ C(route_random_sigma):C(max_speed_and_length_factor)'
-        data_lm = ols(formula, data=data).fit()
-        print data_lm.summary()
-        print "------------------"
 
-        aov_table = anova_lm(data_lm, typ=2)
-        self.eta_squared(aov_table)
-        self.omega_squared(aov_table)
-        print(aov_table)
-        print "------------------"
+class Levene(EqualVarianceTest):
+    """Tests the null hypothesis that all input samples are from populations with equal variances.
 
-        return json.loads(json.dumps(aov_table, default=lambda df: json.loads(df.to_json())))
+    It is a parametric test with robustness w.r.t to deviations from normality.
+    """
+    name = "levene"
 
-        # TODO: store only selected values from the anova table.
-        #
-        # different_averages = bool(pvalue <= self.alpha)
-        #
-        # result = dict()
-        # result["tstat"] = tstat
-        # result["pvalue"] = pvalue
-        # result["alpha"] = self.alpha
-        # result["different_averages"] = different_averages
-        #
-        # return result
+    def get_statistic_and_pvalue(self, y):
+        return levene(*y, center="mean")
 
-    def eta_squared(self, aov):
-        aov['eta_sq'] = 'NaN'
-        aov['eta_sq'] = aov[:-1]['sum_sq']/sum(aov['sum_sq'])
 
-    def omega_squared(self, aov):
-        mse = aov['sum_sq'][-1]/aov['df'][-1]
-        aov['omega_sq'] = 'NaN'
-        aov['omega_sq'] = (aov[:-1]['sum_sq']-(aov[:-1]['df']*mse))/(sum(aov['sum_sq'])+mse)
+class Bartlett(EqualVarianceTest):
+    """Tests the null hypothesis that all input samples are from populations with equal variances.
 
+    It is a parametric test. To be used when samples come from normal populations.
+    For samples from significantly non-normal populations, Levene's test is more robust.
+    """
+    name = "bartlett"
+
+    def get_statistic_and_pvalue(self, y):
+        return bartlett(*y)
+
+
+class FlignerKilleen(EqualVarianceTest):
+    """Tests the null hypothesis that all input samples are from populations with equal variances.
+
+    It is a non-parametric test. It is distribution free when populations are identical.
+    """
+    name = "fligner-killeen"
+
+    def get_statistic_and_pvalue(self, y):
+        return fligner(*y, center="mean")
 

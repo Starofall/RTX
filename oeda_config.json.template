@@ -20,7 +20,8 @@
               "ignore_first_n_results":  { "type": "integer" },
               "knobs":                   { "type": "object"  },
               "sample_size":             { "type": "integer" },
-              "type":                    { "type": "keyword" }
+              "type":                    { "type": "keyword" },
+              "exp_count":               { "type": "integer" }
             }
           },
           "created":  { "type": "date"  }
@@ -32,7 +33,7 @@
       "mapping": {
         "properties": {
           "rtx_run_ids":   { "type": "keyword" },
-          "name":          { "type": "keyword"  },
+          "name":          { "type": "keyword" },
           "result":        { "type": "object"  },
           "created":       { "type": "date"    }
         }
@@ -41,14 +42,36 @@
     "data_point_type": {
       "name": "data_point",
       "mapping": {
-        "_parent":  { "type": "analysis"},
+        "_parent":    { "type": "analysis"},
         "properties": {
           "exp_run":  { "type": "integer" },
           "knobs":    { "type": "object"  },
           "payload":  { "type": "object"  },
-          "created":  { "type": "date"  }
+          "created":  { "type": "date"    }
         }
       }
-    }
+    },
+        "target_system_type": {
+          "name": "target_system",
+          "mapping": {
+            "properties": {
+              "primary_data_provider": {
+                "type": "nested",
+                "properties": {
+                  "type":          { "type": "keyword" },
+                  "serializer":    { "type": "keyword" }
+                }
+              },
+              "change_provider": {
+                "type": "nested",
+                "properties": {
+                  "type":          { "type": "keyword" },
+                  "serializer":    { "type": "keyword" }
+                }
+              },
+              "created":  { "type": "date"  }
+            }
+          }
+        }
   }
 }
