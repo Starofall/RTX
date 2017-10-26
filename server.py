@@ -14,6 +14,8 @@ from analysis_lib.n_sample_tests import Levene
 from analysis_lib.n_sample_tests import FlignerKilleen
 from analysis_lib.n_sample_tests import Bartlett
 from rtxlib.rtx_run import db
+from multiprocessing.dummy import Pool as ThreadPool
+from rtxlib.rtx_run import run_rtx_run
 
 
 class TestData:
@@ -21,16 +23,39 @@ class TestData:
     primary_data_provider = {
         "type": "kafka_consumer",
         "kafka_uri": "kafka:9092",
-        "topic": "crowd-nav-trips",
+        "topic": "crowd-nav-trips-0",
         "serializer": "JSON"
     }
 
     change_provider = {
         "type": "kafka_producer",
         "kafka_uri": "kafka:9092",
-        "topic": "crowd-nav-commands",
+        "topic": "crowd-nav-commands-0",
         "serializer": "JSON",
     }
+
+    primary_data_provider2 = {
+        "type": "kafka_consumer",
+        "kafka_uri": "kafka:9092",
+        "topic": "crowd-nav-trips-1",
+        "serializer": "JSON"
+    }
+
+    change_provider2 = {
+        "type": "kafka_producer",
+        "kafka_uri": "kafka:9092",
+        "topic": "crowd-nav-commands-1",
+        "serializer": "JSON",
+    }
+
+
+class Executor:
+
+    def __init__(self, processes_number = None):
+        self.pool = ThreadPool(processes_number)
+
+    def run(self, rtx_run):
+        return self.pool.apply_async(run_rtx_run, (rtx_run,))
 
 
 if __name__ == '__main__':
@@ -55,19 +80,30 @@ if __name__ == '__main__':
 
     setup_database()
 
-    target_system_id = "CrowdNav"
-    db().save_target_system(target_system_id, TestData.primary_data_provider, TestData.change_provider)
+    target_system_id_1 = "CrowdNav-1"
+    db().save_target_system(target_system_id_1, TestData.primary_data_provider, TestData.change_provider)
+
+    target_system_id_2 = "CrowdNav-2"
+    db().save_target_system(target_system_id_2, TestData.primary_data_provider2, TestData.change_provider2)
+
+    cores = 1
+    executor = Executor(cores)
+
+    rtx_run1 = RTXRun.create(target_system_id_1, execution_strategy)
+    res1 = executor.run(rtx_run1)
+
+    rtx_run2 = RTXRun.create(target_system_id_2, execution_strategy)
+    res2 = executor.run(rtx_run2)
+
+    # the get() blocks
+    rtx_run_id_1 = str(res1.get())
+    rtx_run_id_2 = str(res2.get())
+    print "res1: " + rtx_run_id_1
+    print "res2: " + rtx_run_id_2
 
     rtx_run_ids = list()
-    rtx_run = RTXRun.create(target_system_id, execution_strategy)
-
-    if not rtx_run:
-        exit(0)
-
-    rtx_run_ids.append(rtx_run.start())
-
-    # rtx_run = RTXRun.create(target_system_id, execution_strategy)
-    # rtx_run_ids.append(rtx_run.start())
+    rtx_run_ids.append(rtx_run_id_1)
+    rtx_run_ids.append(rtx_run_id_2)
 
     y_key = "overhead"
 
