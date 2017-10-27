@@ -98,22 +98,50 @@ def get_execution_strategies(execution_strategy, target_system_names):
 
 if __name__ == '__main__':
 
+    # execution_strategy = {
+    #     "ignore_first_n_results": 10,
+    #     "sample_size": 20,
+    #     "type": "step_explorer",
+    #     "knobs": {
+    #         "route_random_sigma": ([0.0, 0.2], 0.01),
+    #         "max_speed_and_length_factor": ([0.0, 0.1], 0.01),
+    #         # "exploration_percentage": ([0.0, 0.2], 0.2),
+    #         # "average_edge_duration_factor": ([0.8, 1], 0.2),
+    #     }
+    # }
+
     execution_strategy = {
-        "ignore_first_n_results": 0,
-        "sample_size": 2,
-        "type": "step_explorer",
-        "knobs": {
-            "route_random_sigma": ([0.0, 0.2], 0.2),
-            "max_speed_and_length_factor": ([0.0, 0.1], 0.1),
-            # "exploration_percentage": ([0.0, 0.2], 0.2),
-            # "average_edge_duration_factor": ([0.8, 1], 0.2),
-        }
+        "ignore_first_n_results": 20,
+        "sample_size": 20,
+        "type": "sequential",
+        "knobs": [
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+        ]
     }
 
     setup_database()
 
     target_system_names = []
-    target_systems_count = 2
+    target_systems_count = 4
 
     for i in range(target_systems_count):
         TestData.primary_data_provider["topic"] = "crowd-nav-trips-" + str(i)
@@ -137,7 +165,9 @@ if __name__ == '__main__':
     pool.close()
     pool.join()
 
-    y_key = "overhead"
+    print "RTX runs finished."
+
+    # y_key = "overhead"
 
     ##########################
     ## One sample tests (Normality tests)
@@ -150,7 +180,7 @@ if __name__ == '__main__':
     ##########################
     ## Two-sample tests
     ##########################
-    Ttest(rtx_run_ids, y_key, alpha=0.05).start()
+    # Ttest(rtx_run_ids, y_key, alpha=0.05).start()
     # TtestSampleSizeEstimation(rtx_run_ids, y_key, mean_diff=0.1, alpha=0.05, power=0.8).start()
 
     ##########################
@@ -173,7 +203,7 @@ if __name__ == '__main__':
     ##########################
     ## Two-way anova
     ##########################
-    FactorialAnova(rtx_run_ids, y_key, execution_strategy["knobs"].keys()).start()
+    # FactorialAnova(rtx_run_ids, y_key, execution_strategy["knobs"].keys()).start()
 
     # TODO: check:
     # racing algorithms: irace
