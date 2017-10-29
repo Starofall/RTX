@@ -48,6 +48,7 @@ class KafkaConsumerDataProvider(DataProvider):
     def reset(self):
         """ creates a new consumer to get to the current position of the queue """
         try:
+            self.consumer.close()
             self.consumer = KafkaConsumer(bootstrap_servers=self.kafka_uri,
                                           value_deserializer=self.serialize_function,
                                           group_id=None,
