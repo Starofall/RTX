@@ -15,9 +15,9 @@ from analysis_lib.n_sample_tests import FlignerKilleen
 from analysis_lib.n_sample_tests import Bartlett
 from rtxlib.rtx_run import db
 from math import ceil
-from rtxlib import error
-from multiprocessing.dummy import Pool as ThreadPool
-from rtxlib.rtx_run import run_rtx_run
+from rtxlib import error, info
+from multiprocessing import Pool
+from math import pow
 
 
 class TestData:
@@ -50,13 +50,19 @@ def get_experiment_list(type, knobs):
             lower = knobs[key][0][0]
             upper = knobs[key][0][1]
             step = knobs[key][1]
+
+            decimal_points = str(step)[::-1].find('.')
+            multiplier = pow(10, decimal_points)
+
             value = lower
             parameter_values = []
             while value <= upper:
                 parameter_values += [[value]]
-                value += step
+                value = float((value * multiplier) + (step * multiplier)) / multiplier
+
             parameters_values += [parameter_values]
         return reduce(lambda list1, list2: [x + y for x in list1 for y in list2], parameters_values)
+
 
 def get_knob_keys(type, knobs):
 
@@ -66,6 +72,7 @@ def get_knob_keys(type, knobs):
 
     if type == "step_explorer":
         return knobs.keys()
+
 
 def get_execution_strategies(execution_strategy, target_system_names):
 
@@ -96,52 +103,57 @@ def get_execution_strategies(execution_strategy, target_system_names):
     return execution_strategies
 
 
+def run_rtx__multiprocess_run(target_system_name):
+    info("Running rtx on target system with name: " + str(target_system_name))
+    return RTXRun.create(target_system_name, execution_strategies[target_system_name]).run()
+
+
 if __name__ == '__main__':
 
-    # execution_strategy = {
-    #     "ignore_first_n_results": 10,
-    #     "sample_size": 20,
-    #     "type": "step_explorer",
-    #     "knobs": {
-    #         "route_random_sigma": ([0.0, 0.2], 0.01),
-    #         "max_speed_and_length_factor": ([0.0, 0.1], 0.01),
-    #         # "exploration_percentage": ([0.0, 0.2], 0.2),
-    #         # "average_edge_duration_factor": ([0.8, 1], 0.2),
-    #     }
-    # }
-
     execution_strategy = {
-        "ignore_first_n_results": 20,
-        "sample_size": 20,
-        "type": "sequential",
-        "knobs": [
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-        ]
+        "ignore_first_n_results": 1,
+        "sample_size": 1,
+        "type": "step_explorer",
+        "knobs": {
+            "route_random_sigma": ([0.00, 0.20], 0.01),
+            "max_speed_and_length_factor": ([0.00, 0.10], 0.01),
+            # "exploration_percentage": ([0.0, 0.2], 0.2),
+            # "average_edge_duration_factor": ([0.8, 1], 0.2),
+        }
     }
+
+    # execution_strategy = {
+    #     "ignore_first_n_results": 0,
+    #     "sample_size": 10000,
+    #     "type": "sequential",
+    #     "knobs": [
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #     ]
+    # }
 
     setup_database()
 
     target_system_names = []
-    target_systems_count = 4
+    target_systems_count = 2
 
     for i in range(target_systems_count):
         TestData.primary_data_provider["topic"] = "crowd-nav-trips-" + str(i)
@@ -152,16 +164,8 @@ if __name__ == '__main__':
 
     execution_strategies = get_execution_strategies(execution_strategy, target_system_names)
 
-    rtx_runs = list()
-    for target_system_name in target_system_names:
-        rtx_run = RTXRun.create(target_system_name, execution_strategies[target_system_name])
-        if not rtx_run:
-            error("Cannot create rtx run. Aborting.")
-            exit(0)
-        rtx_runs.append(rtx_run)
-
-    pool = ThreadPool(target_systems_count)
-    rtx_run_ids = pool.map(run_rtx_run, rtx_runs)
+    pool = Pool(target_systems_count)
+    rtx_run_ids = pool.map(run_rtx__multiprocess_run, target_system_names)
     pool.close()
     pool.join()
 

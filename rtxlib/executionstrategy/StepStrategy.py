@@ -20,12 +20,14 @@ def start_step_strategy(wf):
         lower = knobs[key][0][0]
         upper = knobs[key][0][1]
         step = knobs[key][1]
+        decimal_points = str(step)[::-1].find('.')
+        multiplier = pow(10, decimal_points)
         value = lower
         parameter_values = []
         while value <= upper:
             # create a new list for each item
             parameter_values += [[value]]
-            value += step
+            value = float((value * multiplier) + (step * multiplier)) / multiplier
         parameters_values += [parameter_values]
     list_of_configurations = reduce(lambda list1, list2: [x + y for x in list1 for y in list2], parameters_values)
     wf.list_of_configurations = list_of_configurations
