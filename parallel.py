@@ -18,6 +18,7 @@ from math import ceil
 from rtxlib import error, info
 from multiprocessing import Pool
 from math import pow
+import sys
 
 
 class TestData:
@@ -110,6 +111,11 @@ def run_rtx__multiprocess_run(target_system_name):
 
 if __name__ == '__main__':
 
+    try:
+        target_systems_count = int(sys.argv[1])
+    except:
+        target_systems_count = 1
+
     execution_strategy = {
         "ignore_first_n_results": 1,
         "sample_size": 1,
@@ -153,7 +159,6 @@ if __name__ == '__main__':
     setup_database()
 
     target_system_names = []
-    target_systems_count = 2
 
     for i in range(target_systems_count):
         TestData.primary_data_provider["topic"] = "crowd-nav-trips-" + str(i)
