@@ -117,45 +117,45 @@ if __name__ == '__main__':
     except:
         target_systems_count = 1
 
-    execution_strategy = {
-        "ignore_first_n_results": 1,
-        "sample_size": 1,
-        "type": "step_explorer",
-        "knobs": {
-            "route_random_sigma": ([0.00, 0.20], 0.01),
-            "max_speed_and_length_factor": ([0.00, 0.10], 0.01),
-            # "exploration_percentage": ([0.0, 0.2], 0.2),
-            # "average_edge_duration_factor": ([0.8, 1], 0.2),
-        }
-    }
-
     # execution_strategy = {
-    #     "ignore_first_n_results": 0,
-    #     "sample_size": 10000,
-    #     "type": "sequential",
-    #     "knobs": [
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #         {"route_random_sigma": 0},
-    #     ]
+    #     "ignore_first_n_results": 1,
+    #     "sample_size": 1,
+    #     "type": "step_explorer",
+    #     "knobs": {
+    #         "route_random_sigma": ([0.00, 0.20], 0.01),
+    #         "max_speed_and_length_factor": ([0.00, 0.10], 0.01),
+    #         # "exploration_percentage": ([0.0, 0.2], 0.2),
+    #         # "average_edge_duration_factor": ([0.8, 1], 0.2),
+    #     }
     # }
+
+    execution_strategy = {
+        "ignore_first_n_results": 0,
+        "sample_size": 10000,
+        "type": "sequential",
+        "knobs": [
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0},
+        ]
+    }
 
     setup_database()
 
