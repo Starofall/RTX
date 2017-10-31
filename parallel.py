@@ -25,14 +25,14 @@ class TestData:
 
     primary_data_provider = {
         "type": "kafka_consumer",
-        "kafka_uri": "kafka:9092",
+        "kafka_uri": "exp1:9092",
         "topic": "crowd-nav-trips",
         "serializer": "JSON"
     }
 
     change_provider = {
         "type": "kafka_producer",
-        "kafka_uri": "kafka:9092",
+        "kafka_uri": "exp1:9092",
         "topic": "crowd-nav-commands",
         "serializer": "JSON",
     }
