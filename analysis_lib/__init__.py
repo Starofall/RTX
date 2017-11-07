@@ -13,17 +13,14 @@ class Analysis(object):
         self.rtx_run_ids = rtx_run_ids
         self.y_key = y_key
 
-    def start(self):
-        data, knobs = self.get_data()
+    def start(self, data, knobs):
 
         if not data[0]:
             error("Tried to run " + self.name + " on empty data.")
             error("Aborting analysis.")
             return
 
-        result = self.run(data, knobs)
-        if result:
-            self.save_result(self.name, result)
+        return self.run(data, knobs)
 
     def get_data(self):
         first_rtx_run_id = self.rtx_run_ids[0]

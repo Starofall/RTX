@@ -7,7 +7,7 @@ from elasticsearch.exceptions import TransportError
 from elasticsearch.exceptions import ConnectionError
 from datetime import datetime
 from rtxlib import error
-
+from elasticsearch.helpers import scan
 
 class ElasticSearchDb(Database):
 
@@ -152,3 +152,13 @@ class ElasticSearchDb(Database):
             self.es.index(self.index, self.analysis_type_name, body, analysis_id)
         except ConnectionError:
             error("Error while saving analysis data in elasticsearch. Check connection to elasticsearch.")
+
+    def get_all_data_points(self):
+        self.indices_client.refresh()
+        results = []
+        for doc in scan(self.es,
+                        query={"query": {"match_all": {}}},
+                        index=self.index,
+                        doc_type=self.data_point_type_name):
+            results.append(doc)
+        return [(res["_source"]["payload"], res["_source"]["knobs"]) for res in results]
