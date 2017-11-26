@@ -93,7 +93,7 @@ def get_data_for_run(rtx_run_id):
 class NonLocal: DB = None
 
 
-def setup_database():
+def setup_database(index_name):
 
     with open('oeda_config.json') as json_data_file:
         try:
@@ -107,6 +107,7 @@ def setup_database():
         exit(0)
 
     database_config = config_data["database"]
+    database_config["index"]["name"] = index_name
     info("> OEDA configuration: Using " + database_config["type"] + " database.", Fore.CYAN)
     NonLocal.DB = create_instance(database_config)
 
