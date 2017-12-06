@@ -107,7 +107,8 @@ def setup_database(index_name):
         exit(0)
 
     database_config = config_data["database"]
-    database_config["index"]["name"] = index_name
+    if index_name:
+        database_config["index"]["name"] = index_name
     info("> OEDA configuration: Using " + database_config["type"] + " database.", Fore.CYAN)
     NonLocal.DB = create_instance(database_config)
 
