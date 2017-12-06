@@ -15,3 +15,5 @@ examples/**/*.png
 examples/**/execution.log
 examples/**/results.csv
 .ipynb_checkpoints/*
+RTX.egg-info/*
+oeda_config.json
