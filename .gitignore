@@ -14,3 +14,4 @@ dist/
 examples/**/*.png
 examples/**/execution.log
 examples/**/results.csv
+.ipynb_checkpoints/*
