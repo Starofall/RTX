@@ -19,7 +19,6 @@ from rtxlib import error, info
 from multiprocessing import Pool
 from math import pow
 import sys
-from subprocess import Popen
 
 
 class TestData:
@@ -117,45 +116,45 @@ if __name__ == '__main__':
     except:
         target_systems_count = 1
 
-    # execution_strategy = {
-    #     "ignore_first_n_results": 1,
-    #     "sample_size": 1,
-    #     "type": "step_explorer",
-    #     "knobs": {
-    #         "route_random_sigma": ([0.00, 0.20], 0.01),
-    #         "max_speed_and_length_factor": ([0.00, 0.10], 0.01),
-    #         # "exploration_percentage": ([0.0, 0.2], 0.2),
-    #         # "average_edge_duration_factor": ([0.8, 1], 0.2),
-    #     }
-    # }
-
     execution_strategy = {
-        "ignore_first_n_results": 0,
-        "sample_size": 10000,
-        "type": "sequential",
-        "knobs": [
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-        ]
+        "ignore_first_n_results": 1,
+        "sample_size": 1,
+        "type": "step_explorer",
+        "knobs": {
+            "route_random_sigma": ([0.00, 0.20], 0.01),
+            "max_speed_and_length_factor": ([0.00, 0.10], 0.01),
+            # "exploration_percentage": ([0.0, 0.2], 0.2),
+            # "average_edge_duration_factor": ([0.8, 1], 0.2),
+        }
     }
+
+    # execution_strategy = {
+    #     "ignore_first_n_results": 0,
+    #     "sample_size": 10000,
+    #     "type": "sequential",
+    #     "knobs": [
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0},
+    #     ]
+    # }
 
     setup_database()
 
@@ -170,18 +169,12 @@ if __name__ == '__main__':
 
     execution_strategies = get_execution_strategies(execution_strategy, target_system_names)
 
+    pool = Pool(target_systems_count)
+    rtx_run_ids = pool.map(run_rtx__multiprocess_run, target_system_names)
+    pool.close()
+    pool.join()
 
-    for i in range(0, target_systems_count):
-        target_system_name = target_system_names[i]
-        simulation = Popen(["python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name])])
-        print("RTX run " + str(i) + " started...")
-
-    # pool = Pool(target_systems_count)
-    # rtx_run_ids = pool.map_async(run_rtx__multiprocess_run, target_system_names)
-    # pool.close()
-    # pool.join()
-
-    #print "RTX runs finished."
+    print "RTX runs finished."
 
     # y_key = "overhead"
 
