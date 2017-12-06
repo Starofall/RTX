@@ -93,7 +93,7 @@ def get_data_for_run(rtx_run_id):
 class NonLocal: DB = None
 
 
-def setup_database(index_name):
+def setup_database(index_name=None):
 
     with open('oeda_config.json') as json_data_file:
         try:
