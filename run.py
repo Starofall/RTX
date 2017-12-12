@@ -14,4 +14,4 @@ if __name__ == "__main__":
     RTXRun.create(target_system_name, strategy).run()
 
     import time
-    print "simulation finished: " + str(time.time())
+    print "simulation finished: " + time.strftime('%X %x %Z')
