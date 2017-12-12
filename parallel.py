@@ -134,26 +134,14 @@ if __name__ == '__main__':
         "sample_size": 10000,
         "type": "sequential",
         "knobs": [
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0},
+{"route_random_sigma": 0},
+{"route_random_sigma": 0.2},
+{"route_random_sigma": 0.4},
+{"route_random_sigma": 0.6},
+#{"exploration_percentage":0},
+#{"exploration_percentage": 0.2},
+#{"exploration_percentage": 0.4},
+#{"exploration_percentage": 0.6},
         ]
     }
 
@@ -175,7 +163,7 @@ if __name__ == '__main__':
 
     for i in range(0, target_systems_count):
         target_system_name = target_system_names[i]
-        simulation = Popen(["python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name])])
+        simulation = Popen(["nohup", "python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name])])
         print("RTX run " + str(i) + " started...")
 
     # y_key = "overhead"
