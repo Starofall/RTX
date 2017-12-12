@@ -159,11 +159,13 @@ if __name__ == '__main__':
     execution_strategies = get_execution_strategies(execution_strategy, target_system_names)
 
     import time
-    print "start time: " + time.strftime('%X %x %Z')
+    start = time.time()
+    print "start time: " + str(start)
+    # print "start time: " + time.strftime('%X %x %Z')
 
     for i in range(0, target_systems_count):
         target_system_name = target_system_names[i]
-        simulation = Popen(["nohup", "python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name])])
+        simulation = Popen(["nohup", "python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name]), str(start)])
         print("RTX run " + str(i) + " started...")
 
     # y_key = "overhead"
