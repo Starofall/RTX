@@ -16,5 +16,5 @@ if __name__ == "__main__":
     import time
     end = time.time()
     print "simulation finished"
-    print end - float(sys.argv[2])
+    print end - float(sys.argv[3])
     # print "simulation finished: " + time.strftime('%X %x %Z')
