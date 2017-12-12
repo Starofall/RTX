@@ -12,3 +12,6 @@ if __name__ == "__main__":
     info("Running rtx on target system with name: " + target_system_name)
     info(len(strategy["knobs"]))
     RTXRun.create(target_system_name, strategy).run()
+
+    import time
+    print "simulation finished: " + str(time.time())

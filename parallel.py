@@ -170,6 +170,8 @@ if __name__ == '__main__':
 
     execution_strategies = get_execution_strategies(execution_strategy, target_system_names)
 
+    import time
+    print "start time: " + str(time.time())
 
     for i in range(0, target_systems_count):
         target_system_name = target_system_names[i]
