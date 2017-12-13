@@ -68,41 +68,69 @@ def get_experiment_list(type, knobs):
 
 def get_knob_keys(type, knobs):
 
-    if type == "sequential":
-        '''Here we assume that the knobs in the sequential strategy are specified in the same order'''
-        return knobs[0].keys()
-
     if type == "step_explorer":
         return knobs.keys()
 
 
 def get_execution_strategies(execution_strategy, target_system_names):
 
-    knob_keys = get_knob_keys(execution_strategy["type"], execution_strategy["knobs"])
-    knobs_count = len(knob_keys)
+    type = execution_strategy["type"]
+    knobs = execution_strategy["knobs"]
+    if type == "sequential":
+        execution_strategies_conf = dict()
+        execution_strategies = dict()
+        min_configurations_per_target = len(knobs) / len(target_system_names)
 
-    exp_list = get_experiment_list(execution_strategy["type"], execution_strategy["knobs"])
-    n = int(ceil(float(len(exp_list)) / target_systems_count))
+        global_counter = 0
+        for target_system in target_system_names:
+            execution_strategies_conf[target_system] = []
+            for i in range(global_counter, global_counter + min_configurations_per_target):
+                execution_strategies_conf[target_system].append(i)
+            global_counter += min_configurations_per_target
 
-    list_of_sublists_of_configuration_lists = [exp_list[i:i + n] for i in xrange(0, len(exp_list), n)]
+        for target_system in target_system_names:
+            if global_counter < len(knobs):
+                execution_strategies_conf[target_system].append(global_counter)
+                global_counter += 1
 
-    execution_strategies = dict()
-    counter = 0
-    for sublist_of_configuration_lists in list_of_sublists_of_configuration_lists:
-        strategy = execution_strategy.copy()
-        knobs_list = list()
-        for configuration_list in sublist_of_configuration_lists:
-            inner_knobs_dict = dict()
-            for i in range(knobs_count):
-                inner_knobs_dict[knob_keys[i]]=configuration_list[i]
-            knobs_list.append(inner_knobs_dict)
-        strategy["type"] = "sequential"
-        strategy["knobs"] = knobs_list
-        execution_strategies[target_system_names[counter]] = strategy
-        # print knobs_list
-        counter += 1
+        for target_system in target_system_names:
+            knobs_list = []
+            for i in execution_strategies_conf[target_system]:
+                knobs_list.append(knobs[i])
+            strategy = execution_strategy.copy()
+            strategy["knobs"] = knobs_list
+            execution_strategies[target_system] = strategy
 
-    return execution_strategies
+        return execution_strategies
+
+    if type == "step_explorer":
+
+        knob_keys = get_knob_keys(execution_strategy["type"], execution_strategy["knobs"])
+        knobs_count = len(knob_keys)
+        print knob_keys
+
+        exp_list = get_experiment_list(execution_strategy["type"], execution_strategy["knobs"])
+        n = int(ceil(float(len(exp_list)) / target_systems_count))
+
+        list_of_sublists_of_configuration_lists = [exp_list[i:i + n] for i in xrange(0, len(exp_list), n)]
+
+        execution_strategies = dict()
+        counter = 0
+        for sublist_of_configuration_lists in list_of_sublists_of_configuration_lists:
+            strategy = execution_strategy.copy()
+            knobs_list = list()
+            for configuration_list in sublist_of_configuration_lists:
+                inner_knobs_dict = dict()
+                for i in range(knobs_count):
+                    inner_knobs_dict[knob_keys[i]]=configuration_list[i]
+                knobs_list.append(inner_knobs_dict)
+            strategy["type"] = "sequential"
+            strategy["knobs"] = knobs_list
+            execution_strategies[target_system_names[counter]] = strategy
+            # print knobs_list
+            counter += 1
+
+        return execution_strategies
 
 
 def run_rtx__multiprocess_run(target_system_name):
@@ -134,14 +162,22 @@ if __name__ == '__main__':
         "sample_size": 10000,
         "type": "sequential",
         "knobs": [
-{"route_random_sigma": 0},
-{"route_random_sigma": 0.2},
-{"route_random_sigma": 0.4},
-{"route_random_sigma": 0.6},
-#{"exploration_percentage":0},
-#{"exploration_percentage": 0.2},
-#{"exploration_percentage": 0.4},
-#{"exploration_percentage": 0.6},
+            {"route_random_sigma": 0},
+            {"route_random_sigma": 0.2},
+            {"route_random_sigma": 0.4},
+            {"route_random_sigma": 0.6},
+            {"exploration_percentage": 0},
+            {"exploration_percentage": 0.2},
+            {"exploration_percentage": 0.4},
+            {"exploration_percentage": 0.6},
+            {"max_speed_and_length_factor": 1},
+            {"max_speed_and_length_factor": 1.5},
+            {"max_speed_and_length_factor": 2},
+            {"max_speed_and_length_factor": 2.5},
+            {"average_edge_duration_factor": 1},
+            {"average_edge_duration_factor": 1.5},
+            {"average_edge_duration_factor": 2},
+            {"average_edge_duration_factor": 2.5},
         ]
     }
 
@@ -165,7 +201,9 @@ if __name__ == '__main__':
 
     for i in range(0, target_systems_count):
         target_system_name = target_system_names[i]
-        simulation = Popen(["nohup", "python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name]), str(start)])
+        print str(target_system_name)
+        print str(execution_strategies[target_system_name])
+        # simulation = Popen(["nohup", "python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name]), str(start)])
         print("RTX run " + str(i) + " started...")
 
     # y_key = "overhead"
