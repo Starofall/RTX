@@ -203,7 +203,7 @@ if __name__ == '__main__':
         target_system_name = target_system_names[i]
         print str(target_system_name)
         print str(execution_strategies[target_system_name])
-        # simulation = Popen(["nohup", "python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name]), str(start)])
+        simulation = Popen(["nohup", "python", "./run.py", str(target_system_name), str(execution_strategies[target_system_name]), str(start)])
         print("RTX run " + str(i) + " started...")
 
     # y_key = "overhead"
