@@ -14,6 +14,9 @@ RTX is particularly useful in analyzing operational data in a Big Data environem
 * To run example experiments, first install [CrowdNav](https://github.com/Starofall/CrowdNav)
 * To use Spark as a PreProcessor you also need to install Spark and set SPARK_HOME
 
+### Getting Started Guide
+A first guide is available at this [wiki page](https://github.com/Starofall/RTX/wiki/RTX-&-CrowdNav-Getting-Started-Guide)
+
 ### Abstractions
 
 RTX has the following abstractions that can be implemented for any given service:
