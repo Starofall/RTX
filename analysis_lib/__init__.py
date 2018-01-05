@@ -22,6 +22,12 @@ class Analysis(object):
 
         return self.run(data, knobs)
 
+    @abstractmethod
+    def run(self, data, knobs):
+        """ analysis-specific logic """
+        pass
+
+    '''Currently not used'''
     def get_data(self):
         first_rtx_run_id = self.rtx_run_ids[0]
         data, knobs, exp_count = get_data_for_run(first_rtx_run_id)
@@ -49,11 +55,7 @@ class Analysis(object):
 
         return data, knobs
 
-    @abstractmethod
-    def run(self, data, knobs):
-        """ analysis-specific logic """
-        pass
-
+    '''Currently not used'''
     def save_result(self, analysis_name, result):
         db().save_analysis(self.rtx_run_ids, analysis_name, result)
         info("> ", Fore.CYAN)

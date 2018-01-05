@@ -14,9 +14,10 @@ class FactorialAnova(Analysis):
 
     name = "two-way-anova"
 
-    def __init__(self, rtx_run_ids, y_key, knob_keys):
+    def __init__(self, rtx_run_ids, y_key, knob_keys, exp_count):
         super(FactorialAnova, self).__init__(rtx_run_ids, y_key)
         self.knob_keys = knob_keys
+        self.exp_count = exp_count
 
     def run(self, data, knobs):
 
@@ -30,11 +31,18 @@ class FactorialAnova(Analysis):
         for knob_key in self.knob_keys:
             dataframe_data[knob_key] = [d[knob_key] for i in range(self.exp_count) for d in knobs[i]]
 
+        # data for quick tests:
+        # dataframe_data = {}
+        # dataframe_data["overhead"] = [2.3, 1.3, 2.8, 2.5, 2.9, 2.4, 1.4, 2.6, 1.8, 1.9, 1.2, 3.0]
+        # dataframe_data["route_random_sigma"] = [0, 0, 0, 0.2, 0.2, 0.2, 0, 0, 0, 0, 0, 0]
+        # dataframe_data["exploration_percentage"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0.2, 0.2]
+
         df = pd.DataFrame(dataframe_data)
         print df
         print "------------------"
 
         formula = self.create_formula()
+        # formula = "overhead ~ route_random_sigma * exploration_percentage"
         print formula
         print "------------------"
 
@@ -73,14 +81,14 @@ class FactorialAnova(Analysis):
 
         formula = self.y_key + " ~ "
         formula += " + ".join("C(" + knob_key + ")" for knob_key in self.knob_keys)
-        formula += " + "
+        # formula += " + "
 
-        formula += \
-            " + ".join(
-                " + ".join(
-                    ":".join("C(" + c + ")" for c in comb)
-                    for comb in combinations(self.knob_keys, comb_num))
-                for comb_num in range(2, len(self.knob_keys)+1))
+        # formula += \
+        #     " + ".join(
+        #         " + ".join(
+        #             ":".join("C(" + c + ")" for c in comb)
+        #             for comb in combinations(self.knob_keys, comb_num))
+        #         for comb_num in range(2, len(self.knob_keys)+1))
 
         return formula
 
