@@ -145,41 +145,30 @@ if __name__ == '__main__':
     except:
         target_systems_count = 1
 
-    # execution_strategy = {
-    #     "ignore_first_n_results": 1,
-    #     "sample_size": 1,
-    #     "type": "step_explorer",
-    #     "knobs": {
-    #         "route_random_sigma": ([0.00, 0.20], 0.01),
-    #         "max_speed_and_length_factor": ([0.00, 0.10], 0.01),
-    #         # "exploration_percentage": ([0.0, 0.2], 0.2),
-    #         # "average_edge_duration_factor": ([0.8, 1], 0.2),
-    #     }
-    # }
-
     execution_strategy = {
-        "ignore_first_n_results": 0,
+        "ignore_first_n_results": 3000,
         "sample_size": 10000,
-        "type": "sequential",
-        "knobs": [
-            {"route_random_sigma": 0},
-            {"route_random_sigma": 0.2},
-            {"route_random_sigma": 0.4},
-            {"route_random_sigma": 0.6},
-            {"exploration_percentage": 0},
-            {"exploration_percentage": 0.2},
-            {"exploration_percentage": 0.4},
-            {"exploration_percentage": 0.6},
-            {"max_speed_and_length_factor": 1},
-            {"max_speed_and_length_factor": 1.5},
-            {"max_speed_and_length_factor": 2},
-            {"max_speed_and_length_factor": 2.5},
-            {"average_edge_duration_factor": 1},
-            {"average_edge_duration_factor": 1.5},
-            {"average_edge_duration_factor": 2},
-            {"average_edge_duration_factor": 2.5},
-        ]
+        "type": "step_explorer",
+        "knobs": {
+            "route_random_sigma": ([0.0, 0.3], 0.3),
+            "exploration_percentage": ([0.0, 0.3], 0.3),
+            "max_speed_and_length_factor": ([1.0, 2.5], 1.5),
+            "average_edge_duration_factor": ([1.0, 2.5], 1.5),
+            "freshness_update_factor": ([5, 20], 15),
+            "freshness_cut_off_value": ([100, 700], 600),
+            "re_route_every_ticks": ([10, 70], 60),
+        }
     }
+
+    # execution_strategy = {
+    #     "ignore_first_n_results": 3000,
+    #     "sample_size": 10000,
+    #     "type": "sequential",
+    #     "knobs": [
+    #         {"route_random_sigma": 0},
+    #         {"route_random_sigma": 0.2},
+    #     ]
+    # }
 
     setup_database()
 
