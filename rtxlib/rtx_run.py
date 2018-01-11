@@ -37,18 +37,22 @@ class RTXRun(object):
 
     @staticmethod
     def primary_data_reducer(state, newData, wf):
+        state["avg_overhead"] = (state["avg_overhead"] * state["data_points"] + newData["overhead"]) / (state["data_points"] + 1)
+
         db().save_data_point(wf.experimentCounter, wf.current_knobs, newData, state["data_points"], wf.rtx_run_id)
         state["data_points"] += 1
         return state
 
     @staticmethod
     def state_initializer(state, wf):
+        state["avg_overhead"] = 0
+
         state["data_points"] = 0
         return state
 
     @staticmethod
     def evaluator(resultState, wf):
-        return 0
+        return resultState["avg_overhead"]
 
 
 def run_rtx_run(rtx_run):
