@@ -17,3 +17,5 @@ examples/**/results.csv
 .ipynb_checkpoints/*
 RTX.egg-info/*
 oeda_config.json
+**.pickle
+final-results/**
