@@ -38,25 +38,28 @@ class FactorialAnova(Analysis):
         # dataframe_data["exploration_percentage"] = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0.2, 0.2, 0.2]
 
         df = pd.DataFrame(dataframe_data)
-        print df
-        print "------------------"
+        # print df
+        # print "------------------"
 
         formula = self.create_formula()
         # formula = "overhead ~ route_random_sigma * exploration_percentage"
-        print formula
-        print "------------------"
+        # print formula
+        # print "------------------"
 
         data_lm = ols(formula, data=dataframe_data).fit()
-        print data_lm.summary()
-        print "------------------"
+        # print data_lm.summary()
+        # print "------------------"
 
         aov_table = anova_lm(data_lm, typ=2)
         self.eta_squared(aov_table)
         self.omega_squared(aov_table)
-        print(aov_table)
-        print "------------------"
+        # with pd.option_context('display.max_rows', self.exp_count, 'display.max_columns', 6, 'max_colwidth', 10000):
+            # print(aov_table)
+        # print "------------------"
 
-        return json.loads(json.dumps(aov_table, default=lambda df: json.loads(df.to_json())))
+        return aov_table
+
+        # return json.loads(json.dumps(aov_table, default=lambda df: json.loads(df.to_json())))
 
         # TODO: store only selected values from the anova table.
         #
@@ -81,14 +84,14 @@ class FactorialAnova(Analysis):
 
         formula = self.y_key + " ~ "
         formula += " + ".join("C(" + knob_key + ")" for knob_key in self.knob_keys)
-        # formula += " + "
+        formula += " + "
 
-        # formula += \
-        #     " + ".join(
-        #         " + ".join(
-        #             ":".join("C(" + c + ")" for c in comb)
-        #             for comb in combinations(self.knob_keys, comb_num))
-        #         for comb_num in range(2, len(self.knob_keys)+1))
+        formula += \
+            " + ".join(
+                " + ".join(
+                    ":".join("C(" + c + ")" for c in comb)
+                    for comb in combinations(self.knob_keys, comb_num))
+                for comb_num in range(2, len(self.knob_keys)+1))
 
         return formula
 
