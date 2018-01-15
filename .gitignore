@@ -19,3 +19,4 @@ RTX.egg-info/*
 oeda_config.json
 **.pickle
 final-results/**
+rtxfactorial*.txt
