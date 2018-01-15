@@ -147,10 +147,10 @@ if __name__ == '__main__':
 
     execution_strategy = {
         "ignore_first_n_results": 3000,
-        "sample_size": 10000,
+        "sample_size": 5000,
         "type": "self_optimizer",
         "optimizer_method": "gauss",
-        "optimizer_iterations": 30,
+        "optimizer_iterations": 20,
         "optimizer_random_starts": 1,
         "knobs": {
             "route_random_sigma": (0.0, 0.3),
