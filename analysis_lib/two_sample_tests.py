@@ -18,8 +18,10 @@ class TwoSampleTest(Analysis):
             warn("Cannot run " + self.name + " on more than two samples.")
             warn("Comparing only the first two samples.")
 
-        self.y1 = [d[self.y_key] for d in data[0]]
-        self.y2 = [d[self.y_key] for d in data[1]]
+        from math import log
+        print "with log transformation..."
+        self.y1 = [log(d[self.y_key]) for d in data[0]]
+        self.y2 = [log(d[self.y_key]) for d in data[1]]
 
         return True
 
