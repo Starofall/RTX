@@ -24,14 +24,15 @@ def save_dict_to_file(all_complaints, file_name):
 
 def retrieve_dict_from_file(file_name):
     import pickle
-    pickle_in = open(file_name,"rb")
+    import os.path
+    pickle_in = open(os.path.join('results-CrowdNav', 'raw data', file_name),"rb")
     all_complaints = pickle.load(pickle_in)
     print "data retrieved from file " + file_name
     return all_complaints
 
 
-def get_raw_data(index, from_server, sample_size):
-    file_name = index + "-" + str(sample_size) + ".pickle"
+def get_raw_data(index, from_server):
+    file_name = index + ".pickle"
     if from_server:
         setup_database(index)
         res = db().get_all_data_points()
@@ -48,8 +49,8 @@ def create_experiment_configuration(knobs_keys, knobs_values):
     return exp_conf
 
 
-def get_data_and_knobs(index, strategy_knobs, from_server, sample_size):
-    results = get_raw_data(index, from_server, sample_size)
+def get_data_and_knobs(index, strategy_knobs, from_server):
+    results = get_raw_data(index, from_server)
 
     exp_list = get_experiment_list("step_explorer", strategy_knobs)
 
@@ -71,8 +72,8 @@ def get_data_and_knobs(index, strategy_knobs, from_server, sample_size):
 
         # res = [r for r in results if r[1]==exp_conf1 or r[1]==exp_conf2]
         res = [r for r in results if r[1]==exp_conf]
-        data[cnt] = [r[0] for r in res][:sample_size]
-        knobs[cnt] = [r[1] for r in res][:sample_size]
+        data[cnt] = [r[0] for r in res]
+        knobs[cnt] = [r[1] for r in res]
         # print exp_conf
         # print "Data: " + str(len(data[cnt]))
         cnt += 1
