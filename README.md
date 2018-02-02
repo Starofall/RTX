@@ -12,7 +12,8 @@ self-adaptation exemplar.
 The scripts work with data collected from CrowdNav and persisted in different pickle files. 
 
 To run the scripts, follow these steps: 
-* Clone or download the current branch (seams18) of this project
+* Clone or download the current branch (seams18) of this project. _(Please be aware that this might take 
+awhile since the repository is ~130 MB)_
 * Unzip the file "results-Crowdnav.zip". This should create a new folder 
 called "results-CrowdNav" which would be child to the project's parent ("RTX") folder
 * Navigate to the parent directory of the project and issue: ```jupyter notebook```.
@@ -22,6 +23,14 @@ From here on you can choose to run any notebook from the ones described below.
 To run the code of a single notebook, follow these steps: 
 * Click on one notebook; this will open in a new tab
 * Run the code cells from top to bottom by issuing ```Shift + Enter``` to each of them
+
+### Software requirements
+To run the scripts you need to have the following software installed in your system. 
+* Python (tested with version 2.7)
+* Jupyter (tested with version 4.4.0). For system-specific installation instructions, 
+visit [Installing Jupyter](http://jupyter.org/install) . 
+If you have ```pip``` package manager installed in your system, just run the command: 
+```python -m pip install --upgrade pip; python -m pip install jupyter``` 
 
 ## Generation of System model
 In this phase, we run factorial ANOVA in order to determine the input parameters 
