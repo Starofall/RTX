@@ -1,0 +1,1 @@
+install.packages(c('pracma', 'plumber', 'mlrMBO', 'DiceKriging', 'randomForest', 'ParamHelpers', 'stats', 'rgenoud', 'lhs', 'methods', 'emoa', 'base', 'ggplot2', 'httr'),  repos='http://cran.us.r-project.org', lib="E:\\R-3.4.4\\library")

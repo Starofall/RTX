@@ -28,8 +28,11 @@ class RTXRun(object):
         self.wf.folder = None
 
     def run(self):
-        self.wf.execution_strategy["exp_count"] = \
-            calculate_experiment_count(self.wf.execution_strategy["type"], self.wf.execution_strategy["knobs"])
+        if self.wf.execution_strategy["type"] == "mlr_mbo":
+            self.wf.execution_strategy["exp_count"] = self.wf.execution_strategy["optimizer_iterations"] + self.wf.execution_strategy["optimizer_iterations_in_design"]
+        else:
+            self.wf.execution_strategy["exp_count"] = \
+                calculate_experiment_count(self.wf.execution_strategy["type"], self.wf.execution_strategy["knobs"])
         self.wf.name = self.wf.rtx_run_id = db().save_rtx_run(self.wf.execution_strategy)
         execute_workflow(self.wf)
         db().release_target_system(self.target_system_id)
@@ -57,11 +60,10 @@ def run_rtx_run(rtx_run):
 
 
 def calculate_experiment_count(type, knobs):
-
     if type == "sequential":
         return len(knobs)
 
-    if type == "step_explorer":
+    elif type == "step_explorer":
         variables = []
         parameters_values = []
         for key in knobs:
@@ -77,7 +79,6 @@ def calculate_experiment_count(type, knobs):
             parameters_values += [parameter_values]
         list_of_configurations = reduce(lambda list1, list2: [x + y for x in list1 for y in list2], parameters_values)
         return len(list_of_configurations)
-
 
 def get_data_for_run(rtx_run_id):
     data = dict()

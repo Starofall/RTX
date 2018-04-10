@@ -14,3 +14,6 @@ dist/
 examples/**/*.png
 examples/**/execution.log
 examples/**/results.csv
+*.txt
+RTX.egg-info/PKG-INFO
+RTX.egg-info/not-zip-safe

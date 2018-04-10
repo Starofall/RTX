@@ -2,6 +2,7 @@ from rtxlib.executionstrategy.ForeverStrategy import start_forever_strategy
 from rtxlib.executionstrategy.StepStrategy import start_step_strategy
 from rtxlib.executionstrategy.SelfOptimizerStrategy import start_self_optimizer_strategy
 from rtxlib.executionstrategy.SequencialStrategy import start_sequential_strategy
+from rtxlib.executionstrategy.MlrStrategy import start_mlr_mbo_strategy
 
 from rtxlib import log_results, error, info
 
@@ -31,6 +32,9 @@ def run_execution_strategy(wf):
 
         elif wf.execution_strategy["type"] == "forever":
             start_forever_strategy(wf)
+
+        elif wf.execution_strategy["type"] == "mlr_mbo":
+            start_mlr_mbo_strategy(wf)
     except RuntimeError:
         error("Stopped the whole workflow as requested by a RuntimeError")
     # finished
