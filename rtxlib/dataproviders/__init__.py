@@ -4,7 +4,6 @@ from rtxlib.dataproviders.HTTPRequestDataProvider import HTTPRequestDataProvider
 from rtxlib.dataproviders.IntervalDataProvider import IntervalDataProvider
 from rtxlib.dataproviders.KafkaConsumerDataProvider import KafkaConsumerDataProvider
 from rtxlib.dataproviders.MQTTListenerDataProvider import MQTTListenerDataProvider
-from rtxlib.dataproviders.ElasticSearchDataProvider import ElasticSearchDataProvider
 
 def init_data_providers(wf):
     """ creates the required data providers """
@@ -22,8 +21,6 @@ def createInstance(wf, cp):
         cp["instance"] = MQTTListenerDataProvider(wf, cp)
     elif cp["type"] == "http_request":
         cp["instance"] = HTTPRequestDataProvider(wf, cp)
-    elif cp["type"] == "elastic_search":
-        cp["instance"] = ElasticSearchDataProvider(wf, cp)
     elif cp["type"] == "interval":
         cp["instance"] = IntervalDataProvider(wf, cp)
     else:
