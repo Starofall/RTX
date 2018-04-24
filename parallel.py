@@ -151,15 +151,15 @@ if __name__ == '__main__':
         "type": "self_optimizer",
         "optimizer_method": "gauss",
         "optimizer_iterations": 20,
-        "optimizer_random_starts": 1,
+        "optimizer_random_starts": 8,
         "knobs": {
-            "route_random_sigma": (0.0, 0.3),
-            "exploration_percentage": (0.0, 0.3),
-            "max_speed_and_length_factor": (1.0, 2.5),
-            "average_edge_duration_factor": (1.0, 2.5),
-            "freshness_update_factor": (5, 20),
+            "route_random_sigma": (0.0, 0.4),
+            # "exploration_percentage": (0.0, 0.3),
+            # "max_speed_and_length_factor": (1.0, 2.5),
+            # "average_edge_duration_factor": (1.0, 2.5),
+            # "freshness_update_factor": (5, 20),
             "freshness_cut_off_value": (100, 700),
-            "re_route_every_ticks": (10, 70),
+            # "re_route_every_ticks": (10, 70),
         }
     }
 

@@ -37,7 +37,8 @@ class RTXRun(object):
 
     @staticmethod
     def primary_data_reducer(state, newData, wf):
-        state["avg_overhead"] = (state["avg_overhead"] * state["data_points"] + newData["overhead"]) / (state["data_points"] + 1)
+        state["overheads"].append(newData["overhead"])
+        # state["avg_overhead"] = (state["avg_overhead"] * state["data_points"] + newData["overhead"]) / (state["data_points"] + 1)
 
         db().save_data_point(wf.experimentCounter, wf.current_knobs, newData, state["data_points"], wf.rtx_run_id)
         state["data_points"] += 1
@@ -45,38 +46,38 @@ class RTXRun(object):
         ####################
         #### COMPLAINTS
         ####################
-        if "complaint" in newData:
-            if newData["complaint"] == 1:
-                state["issued_complaints"] += 1
-
-            # Evaluating complaints, applying stopping criterion
-            step = 10
-            complaints_ratio_threshold = 0.12
-            complains_alpha = 0.05
-
-            # received_complaint_data = len(state["complaints"])
-            # issued_complaints = sum(state["complaints"])
-            received_complaint_data = state["data_points"]
-            issued_complaints = state["issued_complaints"]
-
-            if received_complaint_data % step == 0:
-                complaints_ratio = issued_complaints/float(received_complaint_data)
-                next_complaints_no = received_complaint_data + step
-                predicted_complaints_no = int(next_complaints_no * complaints_ratio)
-
-                # print "At the next step, complaints are expected to be: " + str(predicted_complaints_no)
-                p_val = binom_test(predicted_complaints_no, next_complaints_no, complaints_ratio_threshold, alternative="greater")
-                # print p_val
-
-                if p_val < complains_alpha:
-                    print "================"
-                    print "Sample size: " + str(received_complaint_data)
-                    print "If we continue, we will have a complaint rate higher than " + str(complaints_ratio_threshold) + \
-                          " (pvalue: " + str(p_val) + ")"
-                    print "So we abort here."
-                    print "================"
-
-                    raise StopIteration("too costly to continue this experiment")
+        # if "complaint" in newData:
+        #     if newData["complaint"] == 1:
+        #         state["issued_complaints"] += 1
+        #
+        #     # Evaluating complaints, applying stopping criterion
+        #     step = 10
+        #     complaints_ratio_threshold = 0.12
+        #     complains_alpha = 0.05
+        #
+        #     # received_complaint_data = len(state["complaints"])
+        #     # issued_complaints = sum(state["complaints"])
+        #     received_complaint_data = state["data_points"]
+        #     issued_complaints = state["issued_complaints"]
+        #
+        #     if received_complaint_data % step == 0:
+        #         complaints_ratio = issued_complaints/float(received_complaint_data)
+        #         next_complaints_no = received_complaint_data + step
+        #         predicted_complaints_no = int(next_complaints_no * complaints_ratio)
+        #
+        #         # print "At the next step, complaints are expected to be: " + str(predicted_complaints_no)
+        #         p_val = binom_test(predicted_complaints_no, next_complaints_no, complaints_ratio_threshold, alternative="greater")
+        #         # print p_val
+        #
+        #         if p_val < complains_alpha:
+        #             print "================"
+        #             print "Sample size: " + str(received_complaint_data)
+        #             print "If we continue, we will have a complaint rate higher than " + str(complaints_ratio_threshold) + \
+        #                   " (pvalue: " + str(p_val) + ")"
+        #             print "So we abort here."
+        #             print "================"
+        #
+        #             raise StopIteration("too costly to continue this experiment")
         ####################
         #### COMPLAINTS
         ####################
@@ -85,7 +86,8 @@ class RTXRun(object):
 
     @staticmethod
     def state_initializer(state, wf):
-        state["avg_overhead"] = 0
+        state["overheads"] = []
+        # state["avg_overhead"] = 0
 
         state["issued_complaints"] = 0
 
@@ -94,7 +96,9 @@ class RTXRun(object):
 
     @staticmethod
     def evaluator(resultState, wf):
-        return resultState["avg_overhead"]
+        from numpy import median
+        median = median(resultState["overheads"])
+        return median
 
 
 def run_rtx_run(rtx_run):
