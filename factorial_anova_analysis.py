@@ -25,7 +25,8 @@ def save_dict_to_file(all_complaints, file_name):
 def retrieve_dict_from_file(file_name):
     import pickle
     import os.path
-    pickle_in = open(os.path.join('results-CrowdNav', 'raw data', file_name),"rb")
+    pickle_in = open(file_name,"rb")
+    # pickle_in = open(os.path.join('results-CrowdNav', 'raw data', file_name),"rb")
     all_complaints = pickle.load(pickle_in)
     print "data retrieved from file " + file_name
     return all_complaints
