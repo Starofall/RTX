@@ -17,6 +17,8 @@ def init_change_provider(wf):
         cp["instance"] = HTTPRequestChangeProvider(wf, cp)
     elif cp["type"] == "dummy":
         cp["instance"] = DummyChangeChangeProvider(wf, cp)
+    if cp["type"] == "local_hook":
+        cp["instance"] = LocalHookChangeProvider(wf, cp)
     else:
         error("Not a valid changeProvider")
         exit(1)

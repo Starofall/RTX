@@ -24,5 +24,7 @@ def createInstance(wf, cp):
         cp["instance"] = HTTPRequestDataProvider(wf, cp)
     elif cp["type"] == "interval":
         cp["instance"] = IntervalDataProvider(wf, cp)
+    if cp["type"] == "local_hook":
+        cp["instance"] = LocalHookChangeProvider(wf, cp)
     else:
         error("Not a valid data_provider")
